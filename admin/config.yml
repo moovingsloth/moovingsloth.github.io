@@ -697,7 +697,7 @@ collections:
   filter:
     field: cms_exclude
   folder: content/publication
-  label: Publications
+  label: "Paper Review & Presentation"
   label_singular: Publication
   name: publications
   path: '{{slug}}/index'

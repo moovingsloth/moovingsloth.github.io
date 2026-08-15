@@ -1,3 +1,3 @@
 User-agent: *
 
-Sitemap: https://alisawuffles.github.com/sitemap.xml
+Sitemap: https://moovingsloth.github.io/sitemap.xml

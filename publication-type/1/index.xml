@@ -1,166 +1,166 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>1 | Alisa Liu</title>
-    <link>https://alisawuffles.github.com/publication-type/1/</link>
-      <atom:link href="https://alisawuffles.github.com/publication-type/1/index.xml" rel="self" type="application/rss+xml" />
+    <title>1 | Lee DongWon</title>
+    <link>https://moovingsloth.github.io/publication-type/1/</link>
+      <atom:link href="https://moovingsloth.github.io/publication-type/1/index.xml" rel="self" type="application/rss+xml" />
     <description>1</description>
     <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Thu, 10 Jul 2025 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>https://alisawuffles.github.com/media/icon_hud8834e9ff972feb9f2e083fdfd5a8c45_7247_512x512_fill_lanczos_center_3.png</url>
+      <url>https://moovingsloth.github.io/media/sloth-icon-512.png</url>
       <title>1</title>
-      <link>https://alisawuffles.github.com/publication-type/1/</link>
+      <link>https://moovingsloth.github.io/publication-type/1/</link>
     </image>
     
     <item>
       <title>Broken Tokens? Your Language Model can Secretly Handle Non-Canonical Tokenizations</title>
-      <link>https://alisawuffles.github.com/publication/broken_tokens/</link>
+      <link>https://moovingsloth.github.io/publication/broken_tokens/</link>
       <pubDate>Thu, 10 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/broken_tokens/</guid>
+      <guid>https://moovingsloth.github.io/publication/broken_tokens/</guid>
       <description></description>
     </item>
     
     <item>
       <title>SuperBPE: Space Travel for Language Models</title>
-      <link>https://alisawuffles.github.com/publication/superbpe/</link>
+      <link>https://moovingsloth.github.io/publication/superbpe/</link>
       <pubDate>Wed, 09 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/superbpe/</guid>
+      <guid>https://moovingsloth.github.io/publication/superbpe/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tulu 3: Pushing Frontiers in Open Language Model Post-Training</title>
-      <link>https://alisawuffles.github.com/publication/tulu3/</link>
+      <link>https://moovingsloth.github.io/publication/tulu3/</link>
       <pubDate>Tue, 08 Jul 2025 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/tulu3/</guid>
+      <guid>https://moovingsloth.github.io/publication/tulu3/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Does Liking Yellow Imply Driving a School Bus? Semantic Leakage in Language Models</title>
-      <link>https://alisawuffles.github.com/publication/semantic_leakage/</link>
+      <link>https://moovingsloth.github.io/publication/semantic_leakage/</link>
       <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/semantic_leakage/</guid>
+      <guid>https://moovingsloth.github.io/publication/semantic_leakage/</guid>
       <description></description>
     </item>
     
     <item>
       <title>LlamaPIE: Proactive In-Ear Conversation Assistants</title>
-      <link>https://alisawuffles.github.com/publication/llamapie/</link>
+      <link>https://moovingsloth.github.io/publication/llamapie/</link>
       <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/llamapie/</guid>
+      <guid>https://moovingsloth.github.io/publication/llamapie/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Data Mixture Inference: What do BPE Tokenizers Reveal about their Training Data?</title>
-      <link>https://alisawuffles.github.com/publication/bpe/</link>
+      <link>https://moovingsloth.github.io/publication/bpe/</link>
       <pubDate>Tue, 23 Jul 2024 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/bpe/</guid>
+      <guid>https://moovingsloth.github.io/publication/bpe/</guid>
       <description></description>
     </item>
     
     <item>
       <title>We&#39;re Afraid Language Models Aren&#39;t Modeling Ambiguity</title>
-      <link>https://alisawuffles.github.com/publication/ambient/</link>
+      <link>https://moovingsloth.github.io/publication/ambient/</link>
       <pubDate>Fri, 20 Oct 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/ambient/</guid>
+      <guid>https://moovingsloth.github.io/publication/ambient/</guid>
       <description></description>
     </item>
     
     <item>
       <title>That was the last straw, we need more: Are Translation Systems Sensitive to Disambiguating Context?</title>
-      <link>https://alisawuffles.github.com/publication/tide/</link>
+      <link>https://moovingsloth.github.io/publication/tide/</link>
       <pubDate>Thu, 19 Oct 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/tide/</guid>
+      <guid>https://moovingsloth.github.io/publication/tide/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Inverse Scaling: When Bigger Isn&#39;t Better</title>
-      <link>https://alisawuffles.github.com/publication/inverse_scaling/</link>
+      <link>https://moovingsloth.github.io/publication/inverse_scaling/</link>
       <pubDate>Wed, 18 Oct 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/inverse_scaling/</guid>
+      <guid>https://moovingsloth.github.io/publication/inverse_scaling/</guid>
       <description></description>
     </item>
     
     <item>
       <title>How Language Model Hallucinations Can Snowball</title>
-      <link>https://alisawuffles.github.com/publication/snowballing/</link>
+      <link>https://moovingsloth.github.io/publication/snowballing/</link>
       <pubDate>Mon, 22 May 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/snowballing/</guid>
+      <guid>https://moovingsloth.github.io/publication/snowballing/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Self-Instruct: Aligning Language Models with Self-Generated Instructions</title>
-      <link>https://alisawuffles.github.com/publication/self_instruct/</link>
+      <link>https://moovingsloth.github.io/publication/self_instruct/</link>
       <pubDate>Wed, 21 Dec 2022 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/self_instruct/</guid>
+      <guid>https://moovingsloth.github.io/publication/self_instruct/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Detoxifying Text with MaRCo: Controllable Revision with Experts and Anti-Experts</title>
-      <link>https://alisawuffles.github.com/publication/marco/</link>
+      <link>https://moovingsloth.github.io/publication/marco/</link>
       <pubDate>Tue, 20 Dec 2022 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/marco/</guid>
+      <guid>https://moovingsloth.github.io/publication/marco/</guid>
       <description></description>
     </item>
     
     <item>
       <title>WANLI: Worker and AI Collaboration for Natural Language Inference Dataset Creation</title>
-      <link>https://alisawuffles.github.com/publication/wanli/</link>
+      <link>https://moovingsloth.github.io/publication/wanli/</link>
       <pubDate>Sat, 15 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/wanli/</guid>
+      <guid>https://moovingsloth.github.io/publication/wanli/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Generated Knowledge Prompting for Commonsense Reasoning</title>
-      <link>https://alisawuffles.github.com/publication/knowledge_gen/</link>
+      <link>https://moovingsloth.github.io/publication/knowledge_gen/</link>
       <pubDate>Sat, 01 Jan 2022 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/knowledge_gen/</guid>
+      <guid>https://moovingsloth.github.io/publication/knowledge_gen/</guid>
       <description></description>
     </item>
     
     <item>
       <title>DExperts: Decoding-Time Controlled Text Generation with Experts and Anti-Experts</title>
-      <link>https://alisawuffles.github.com/publication/dexperts/</link>
+      <link>https://moovingsloth.github.io/publication/dexperts/</link>
       <pubDate>Mon, 02 Aug 2021 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/dexperts/</guid>
+      <guid>https://moovingsloth.github.io/publication/dexperts/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Model Selection for Deep Audio Source Separation via Clustering Analysis</title>
-      <link>https://alisawuffles.github.com/publication/ensemble/</link>
+      <link>https://moovingsloth.github.io/publication/ensemble/</link>
       <pubDate>Mon, 02 Nov 2020 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/ensemble/</guid>
+      <guid>https://moovingsloth.github.io/publication/ensemble/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Bach or Mock? A Grading Function for Chorales in the Style of J.S. Bach</title>
-      <link>https://alisawuffles.github.com/publication/grading_function/</link>
+      <link>https://moovingsloth.github.io/publication/grading_function/</link>
       <pubDate>Sat, 18 Jul 2020 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/grading_function/</guid>
+      <guid>https://moovingsloth.github.io/publication/grading_function/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Incorporating Music Knowledge in Continual Dataset Augmentation for Music Generation</title>
-      <link>https://alisawuffles.github.com/publication/aug_gen/</link>
+      <link>https://moovingsloth.github.io/publication/aug_gen/</link>
       <pubDate>Sat, 18 Jul 2020 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/aug_gen/</guid>
+      <guid>https://moovingsloth.github.io/publication/aug_gen/</guid>
       <description></description>
     </item>
     
     <item>
       <title>CODAH: An Adversarially-Authored Question Answering Dataset for Common Sense</title>
-      <link>https://alisawuffles.github.com/publication/codah/</link>
+      <link>https://moovingsloth.github.io/publication/codah/</link>
       <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/codah/</guid>
+      <guid>https://moovingsloth.github.io/publication/codah/</guid>
       <description></description>
     </item>
     

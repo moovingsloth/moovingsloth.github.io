@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>evaluation | Alisa Liu</title>
-    <link>https://alisawuffles.github.com/tag/evaluation/</link>
-      <atom:link href="https://alisawuffles.github.com/tag/evaluation/index.xml" rel="self" type="application/rss+xml" />
+    <title>evaluation | Lee DongWon</title>
+    <link>https://moovingsloth.github.io/tag/evaluation/</link>
+      <atom:link href="https://moovingsloth.github.io/tag/evaluation/index.xml" rel="self" type="application/rss+xml" />
     <description>evaluation</description>
     <generator>Wowchemy (https://wowchemy.com)</generator><language>en-us</language><lastBuildDate>Fri, 20 Oct 2023 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>https://alisawuffles.github.com/media/icon_hud8834e9ff972feb9f2e083fdfd5a8c45_7247_512x512_fill_lanczos_center_3.png</url>
+      <url>https://moovingsloth.github.io/media/sloth-icon-512.png</url>
       <title>evaluation</title>
-      <link>https://alisawuffles.github.com/tag/evaluation/</link>
+      <link>https://moovingsloth.github.io/tag/evaluation/</link>
     </image>
     
     <item>
       <title>We&#39;re Afraid Language Models Aren&#39;t Modeling Ambiguity</title>
-      <link>https://alisawuffles.github.com/publication/ambient/</link>
+      <link>https://moovingsloth.github.io/publication/ambient/</link>
       <pubDate>Fri, 20 Oct 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/ambient/</guid>
+      <guid>https://moovingsloth.github.io/publication/ambient/</guid>
       <description></description>
     </item>
     
     <item>
       <title>That was the last straw, we need more: Are Translation Systems Sensitive to Disambiguating Context?</title>
-      <link>https://alisawuffles.github.com/publication/tide/</link>
+      <link>https://moovingsloth.github.io/publication/tide/</link>
       <pubDate>Thu, 19 Oct 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/tide/</guid>
+      <guid>https://moovingsloth.github.io/publication/tide/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Inverse Scaling: When Bigger Isn&#39;t Better</title>
-      <link>https://alisawuffles.github.com/publication/inverse_scaling/</link>
+      <link>https://moovingsloth.github.io/publication/inverse_scaling/</link>
       <pubDate>Wed, 18 Oct 2023 00:00:00 +0000</pubDate>
-      <guid>https://alisawuffles.github.com/publication/inverse_scaling/</guid>
+      <guid>https://moovingsloth.github.io/publication/inverse_scaling/</guid>
       <description></description>
     </item>
     
