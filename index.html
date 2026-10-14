@@ -580,7 +580,7 @@
           
 
           <li class="nav-item">
-            <a class="nav-link " href="/#publications" data-target="#publications"><span>Paper Review &amp; Presentation</span></a>
+            <a class="nav-link " href="/#publications" data-target="#publications"><span>Projects</span></a>
           </li>
 
           
@@ -841,7 +841,7 @@
 
     <h1 class="bio-name">Lee DongWon</h1>
     <div class="article-style">
-      <p>Hello! I’m an undergraduate researcher at the <a href="https://emil.khu.ac.kr/" target="_blank" rel="noopener">EMIL Lab</a>, Kyung Hee University, advised by Professor <a href="https://www.sunghachoi.com/" target="_blank" rel="noopener">Sungha Choi</a>. My research focuses on building efficient algorithms and systems that make multimodal foundation models practical on real-world devices, even under tight memory, compute, and latency constraints.</p>
+      <p>Hello! I’m a Software Convergence undergraduate at Kyung Hee University and an undergraduate researcher at the <a href="https://emil.khu.ac.kr/" target="_blank" rel="noopener">EMIL Lab</a>, advised by Professor <a href="https://www.sunghachoi.com/" target="_blank" rel="noopener">Sungha Choi</a>. I work on making LLM and video-LLM inference use less memory, mainly by compressing and quantizing the KV cache.</p>
 
     </div>
   </div>
@@ -863,9 +863,9 @@
           <img src="/img/kyung-hee-university-symbol.jpg" alt="Kyung Hee University symbol">
         </div>
         <div class="exp-content">
-          <div class="role">Undergraduate Intern, Kyung Hee University</div>
-          <div class="meta">Jul. 2026 &ndash; Present &middot; 2 mos</div>
-          <p class="description">Efficient Multimodal Adaptation on Edge Devices</p>
+          <div class="role">Undergraduate Research Intern, EMIL Lab, Kyung Hee University</div>
+          <div class="meta">Jul. 2026 &ndash; Present</div>
+          <p class="description">Studied memory-efficient KV cache quantization for reasoning LLMs (in progress).</p>
         </div>
       </div>
 
@@ -875,8 +875,8 @@
         </div>
         <div class="exp-content">
           <div class="role">Software Engineer Internship, ROBROS</div>
-          <div class="meta">Dec. 2025 &ndash; Feb. 2026 &middot; 3 mos</div>
-          <p class="description">Integrated a camera streaming pipeline into the SDK to support humanoid locomotion.</p>
+          <div class="meta">Dec. 2025 &ndash; Mar. 2026 &middot; 4 mos</div>
+          <p class="description">Built Python/C++ camera streaming for a humanoid SDK used in VR teleoperation; tuned buffers and validated on the physical robot.</p>
         </div>
       </div>
 
@@ -885,9 +885,27 @@
           <img src="/img/kyung-hee-university-symbol.jpg" alt="Kyung Hee University symbol">
         </div>
         <div class="exp-content">
-          <div class="role">Research Assistant, Kyung Hee University</div>
+          <div class="role">Research Intern, AIMS Lab, Kyung Hee University</div>
           <div class="meta">Jul. 2025 &ndash; Dec. 2025 &middot; 6 mos</div>
-          <p class="description">Investigate the intersection of emotional factors and learning outcomes through a multidisciplinary approach, in collaboration with Dept. of Metaverse, fostering global academic partnerships.</p>
+          <p class="description">Built a multimodal classroom dataset of ChatGPT use.</p>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="logo logo-text" aria-hidden="true">PS</div>
+        <div class="exp-content">
+          <div class="role">Co-founder &amp; PM, Photo Studio Booking Platform</div>
+          <div class="meta">Mar. 2024 &ndash; Jul. 2025</div>
+          <p class="description">Led a 5-member team; shipped an iOS app.</p>
+        </div>
+      </div>
+
+      <div class="exp-item">
+        <div class="logo logo-text" aria-hidden="true">ROKA</div>
+        <div class="exp-content">
+          <div class="role">Sergeant, Republic of Korea Army</div>
+          <div class="meta">Jul. 2022 &ndash; Jan. 2024</div>
+          <p class="description">Military service.</p>
         </div>
       </div>
     </div>
@@ -899,9 +917,16 @@
   <div class="container">
     <h2>Current Work</h2>
     <article>
-      <h3>Multimodal KV Cache Quantization for Long-Video Understanding</h3>
-      <div class="current-work-period"><time datetime="2026-06">Jun. 2026</time> &ndash; Present</div>
-      <p>Developing modality-aware KV cache quantization for long-video MLLMs, exploiting temporal redundancy across video tokens and distinct characteristics of visual and text KV caches. The goal is to enable memory-efficient long-video understanding while preserving model performance.</p>
+      <h3>Memory-Efficient Long-Video Understanding (Capstone)</h3>
+      <div class="current-work-period"><time datetime="2026-09">Sep. 2026</time> &ndash; Present</div>
+      <p>On top of InfiniPot-V compression (6K KV budget), I store the kept KV cache in INT4 instead of FP16. With Qwen2-VL-7B: Video-MME 63.5 vs 62.8 and MLVU 66.1 vs 65.8 (FP16), at ~1/3.1 the KV bytes (164 B vs 512 B per token per head).</p>
+      <p><a class="btn-page-header" href="/projects/long-video-kv/">Project page</a></p>
+    </article>
+
+    <article>
+      <h3>Memory-Efficient KV Cache Quantization for Reasoning LLMs (EMIL Lab)</h3>
+      <div class="current-work-period"><time datetime="2026-07">Jul. 2026</time> &ndash; Present</div>
+      <p>In progress.</p>
     </article>
   </div>
 </section>
@@ -975,99 +1000,16 @@
   <div class="container">
     <div class="row">
       <div class="section-heading col-12 col-lg-3 mb-3 mb-lg-0 d-flex flex-column align-items-center align-items-lg-start">
-        <h1 class="mb-0">Paper Review &amp; Presentation</h1>
+        <h1 class="mb-0">Projects</h1>
       </div>
 
       <div class="col-12 col-lg-9">
-        <div class="pub-list-item view-citation paper-review-item">
-          <h3 class="pub-card-title">Gated Attention for Large Language Models: Non-linearity, Sparsity, and Attention-Sink-Free</h3>
-          <div class="paper-date"><time datetime="2026-08">Aug. 2026</time></div>
-          <div class="paper-tags" aria-label="Topics">
-            <span class="paper-tag">Gated Attention</span>
-            <span class="paper-tag">Attention Sparsity</span>
-            <span class="paper-tag">Long-Context Modeling</span>
-          </div>
-          <p>
-            <a class="btn btn-outline-primary btn-page-header btn-sm" href="/uploads/paper-review/gated-attention.pdf" target="_blank" rel="noopener">
-              <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Slides
-            </a>
-          </p>
-        </div>
-
-        <div class="pub-list-item view-citation paper-review-item">
-          <h3 class="pub-card-title">KV Cache Quantization</h3>
-          <div class="paper-date"><time datetime="2026-08">Aug. 2026</time></div>
-          <div class="paper-tags" aria-label="Topics">
-            <span class="paper-tag">KV Cache Quantization</span>
-            <span class="paper-tag">Multimodal AI</span>
-            <span class="paper-tag">Long-Video Understanding</span>
-          </div>
-          <p>
-            <a class="btn btn-outline-primary btn-page-header btn-sm" href="/uploads/paper-review/kv-cache-quantization.pdf" target="_blank" rel="noopener">
-              <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Slides
-            </a>
-          </p>
-        </div>
-
-        <div class="pub-list-item view-citation paper-review-item">
-          <h3 class="pub-card-title">TurboQuant: Online Vector Quantization with Near-Optimal Distortion Rate</h3>
-          <div class="paper-date"><time datetime="2026-08">Aug. 2026</time></div>
-          <div class="paper-tags" aria-label="Topics">
-            <span class="paper-tag">KV Cache Quantization</span>
-            <span class="paper-tag">Vector Quantization</span>
-            <span class="paper-tag">Efficient Inference</span>
-          </div>
-          <p>
-            <a class="btn btn-outline-primary btn-page-header btn-sm" href="/uploads/paper-review/turboquant.pdf" target="_blank" rel="noopener">
-              <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Slides
-            </a>
-          </p>
-        </div>
-
-        <div class="pub-list-item view-citation paper-review-item">
-          <h3 class="pub-card-title">SnapKV: LLM Knows What You Are Looking for Before Generation</h3>
-          <div class="paper-date"><time datetime="2026-07">Jul. 2026</time></div>
-          <div class="paper-tags" aria-label="Topics">
-            <span class="paper-tag">KV Cache Compression</span>
-            <span class="paper-tag">Query-Aware Token Selection</span>
-            <span class="paper-tag">Long-Context Inference</span>
-          </div>
-          <p>
-            <a class="btn btn-outline-primary btn-page-header btn-sm" href="/uploads/paper-review/snapkv.pdf" target="_blank" rel="noopener">
-              <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Slides
-            </a>
-          </p>
-        </div>
-
-        <div class="pub-list-item view-citation paper-review-item">
-          <h3 class="pub-card-title">Pretraining &amp; Natural Language Generation</h3>
-          <div class="paper-date"><time datetime="2026-07">Jul. 2026</time></div>
-          <div class="paper-tags" aria-label="Topics">
-            <span class="paper-tag">Foundation Models</span>
-            <span class="paper-tag">Pretraining</span>
-            <span class="paper-tag">Text Generation</span>
-          </div>
-          <p>
-            <a class="btn btn-outline-primary btn-page-header btn-sm" href="/uploads/paper-review/pretraining-nlg.pdf" target="_blank" rel="noopener">
-              <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Slides
-            </a>
-          </p>
-        </div>
-
-        <div class="pub-list-item view-citation paper-review-item">
-          <h3 class="pub-card-title">Attention</h3>
-          <div class="paper-date"><time datetime="2026-07">Jul. 2026</time></div>
-          <div class="paper-tags" aria-label="Topics">
-            <span class="paper-tag">Efficient Attention</span>
-            <span class="paper-tag">KV Cache</span>
-            <span class="paper-tag">Long-Context Modeling</span>
-          </div>
-          <p>
-            <a class="btn btn-outline-primary btn-page-header btn-sm" href="/uploads/paper-review/attention.pdf" target="_blank" rel="noopener">
-              <i class="fas fa-file-pdf mr-1" aria-hidden="true"></i>Slides
-            </a>
-          </p>
-        </div>
+        <ul class="project-list">
+          <li><a href="/projects/long-video-kv/">Memory-Efficient Long-Video Understanding (Capstone)</a> &mdash; INT4 KV cache on top of InfiniPot-V; ~1/3.1 the KV bytes at the same 6K budget.</li>
+          <li>Memory-Efficient KV Cache Quantization for Reasoning LLMs (EMIL Lab) &mdash; in progress.</li>
+          <li class="project-plain">GPU-Accelerated LLM Inference (Mar. 2025 &ndash; Present)</li>
+          <li class="project-plain">Data-Efficient 3D Reconstruction (Mar. &ndash; Jun. 2026) &mdash; view selection via dataset distillation</li>
+        </ul>
       </div>
     </div>
   </div>
