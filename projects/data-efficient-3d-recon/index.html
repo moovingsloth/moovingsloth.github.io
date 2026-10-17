@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Source+Sans+Pro:wght@200;300;400;600;700&display=swap" />
   <link rel="stylesheet" href="/assets/css/project.css" />
+  <script src="/assets/js/project-toc.js" defer></script>
 </head>
 <body>
 <main>
@@ -27,17 +28,17 @@
     </video>
   </div>
 
-  <h2 class="first">Overview</h2>
+  <h2 class="first" id="overview">Overview</h2>
   <p>3D Gaussian Splatting (3DGS) [1] builds a 3D scene from many posed images. A robot camera stream gives far more frames than reconstruction needs. This project asks which input views to keep, and uses a distillation-style setup to select a small, informative subset instead of training on every frame.</p>
   <p class="note">Goal stated in the project slides: a camera-to-3DGS pipeline that uses 50% of the frames (baseline: 100%).</p>
 
-  <h2>Motivation</h2>
+  <h2 id="motivation">Motivation</h2>
   <ul>
     <li>A 2D image stream only delivers the current frame. To understand space (passages, obstacles, depth), a robot needs one 3D representation that merges many observations and can be reused for SLAM, mapping, and navigation.</li>
     <li>Among candidate representations (raw image sequence, point cloud / RGB-D, mesh / TSDF, NeRF [2], 3DGS), 3DGS was chosen as the best balance of expressiveness and practicality: it starts from RGB alone, its explicit Gaussians expose scene structure directly, and depth can be added later.</li>
   </ul>
 
-  <h2>Problem</h2>
+  <h2 id="problem">Problem</h2>
   <p>Early 3DGS trials on a real robot image stream showed that a good image stream is not the same as good reconstruction input:</p>
   <ul>
     <li>Consecutive frames are highly redundant, with very small viewpoint changes.</li>
@@ -46,7 +47,7 @@
     <li>So using every frame is not always best. The task becomes selecting keyframes to improve the reconstruction quality / cost trade-off.</li>
   </ul>
 
-  <h2>Method</h2>
+  <h2 id="method">Method</h2>
   <ul>
     <li><b>Pipeline.</b> RGB-D images from a RealSense camera are published from a Jetson over a CycloneDDS topic and subscribed by the host system, which feeds them to 3DGS.</li>
     <li><b>Baselines.</b> Uniform stride, random, and angle-based sampling, compared with training on the full view set.</li>
@@ -54,7 +55,7 @@
     <li><b>View scores explored.</b> Rendered-RGB score, gradient (view update) score, Gaussian visibility coverage, and pose diversity between views (pose-greedy).</li>
   </ul>
 
-  <h2>Results</h2>
+  <h2 id="results">Results</h2>
   <figure class="boxed">
     <img src="uploads/view-selection-psnr-ssim.png" alt="PSNR and SSIM versus number of input views for pose-greedy, random, RGB score, gradient score and coverage score selection, with the full 161-view reference line" loading="lazy" />
   </figure>
@@ -64,7 +65,7 @@
   </ul>
   <p class="note">Source: project progress slides (May 2026), &ldquo;Result&rdquo; slide.</p>
 
-  <h2>My Role</h2>
+  <h2 id="my-role">My Role</h2>
   <ul>
     <li>Built the CycloneDDS image-streaming pipeline (RealSense on Jetson, publish/subscribe to the host) that provides the reconstruction input.</li>
     <li>Ran the baseline 3DGS reconstructions and the frame-sampling baselines, and analyzed frame redundancy in the robot stream.</li>
@@ -72,14 +73,14 @@
   </ul>
   <p class="note">Tech: 3D Gaussian Splatting, PyTorch, CycloneDDS, Intel RealSense, NVIDIA Jetson.</p>
 
-  <h2>Next Steps</h2>
+  <h2 id="next-steps">Next Steps</h2>
   <ul>
     <li>Improve the distillation architecture.</li>
     <li>Validate on other scenes and datasets.</li>
     <li>Run it on the real camera pipeline.</li>
   </ul>
 
-  <h2>References</h2>
+  <h2 id="references">References</h2>
   <p>Background work only; not results from this project.</p>
   <ol>
     <li>B. Kerbl, G. Kopanas, T. Leimk&uuml;hler, G. Drettakis. <a href="https://arxiv.org/abs/2308.04079" target="_blank" rel="noopener">3D Gaussian Splatting for Real-Time Radiance Field Rendering</a>. SIGGRAPH 2023.</li>

@@ -104,3 +104,22 @@ dl.kv dd ul { margin:0; }
   dl.kv { grid-template-columns:1fr; gap:0.1rem; }
   dl.kv dd { margin-bottom:0.5rem; }
 }
+
+/* Left-side table of contents (built by /assets/js/project-toc.js).
+   Fixed in the left margin so the 760px main column stays centered; hidden below 1200px. */
+html { scroll-behavior:smooth; }
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+main h2[id], main h3[id] { scroll-margin-top:1.5rem; }
+.page-toc { display:none; }
+@media (min-width:1200px) {
+  .page-toc { display:block; position:fixed; top:7.25rem; left:calc(50% - 380px - 228px); width:196px; max-height:calc(100vh - 9rem); overflow-y:auto; font-size:0.8rem; line-height:1.4; }
+  .page-toc .toc-label { margin:0 0 0.5rem; color:var(--muted); font-size:0.72rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
+  .page-toc ol { margin:0; padding:0; list-style:none; }
+  .page-toc li { margin:0; font-size:inherit; }
+  .page-toc a { display:block; padding:0.22rem 0 0.22rem 0.75rem; color:#888; border-left:2px solid var(--border); text-decoration:none; }
+  .page-toc a:hover { color:var(--text); text-decoration:none; }
+  .page-toc a.active { color:var(--accent); border-left-color:var(--accent); font-weight:600; }
+  .page-toc li.sub a { padding-left:1.5rem; font-size:0.76rem; }
+  .page-toc li.has-sub > ol { display:none; }
+  .page-toc li.has-sub.open > ol { display:block; }
+}

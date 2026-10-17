@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Source+Sans+Pro:wght@200;300;400;600;700&display=swap" />
   <link rel="stylesheet" href="/assets/css/project.css" />
+  <script src="/assets/js/project-toc.js" defer></script>
 </head>
 <body>
 <main>
@@ -56,82 +57,82 @@
   <p>When I started, the existing Python CycloneDDS send/receive code did not work at all.</p>
 
   <h2 id="built">What I built</h2>
-  <h3>1. Getting CycloneDDS streaming working on the robot</h3>
+  <h3 id="getting-cyclonedds-streaming-working-on-the-robot">1. Getting CycloneDDS streaming working on the robot</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>the existing Python publish/subscribe code did not run, so no data moved between the Jetson and the NUC.</dd>
     <dt>What I did</dt><dd>diagnosed it layer by layer, from the network stack down to library paths. I raised the OS kernel socket buffer limits that were blocking real-time traffic, fixed shared-library loading by correcting <code>LD_LIBRARY_PATH</code>, and fixed the IDL compile errors structurally by building the IDL compiler (<code>idlc</code>) inside the CMake build instead of relying on a separately installed one.</dd>
     <dt>Outcome</dt><dd>Jetson-to-NUC communication over LAN worked, which became the base for everything else.</dd>
   </dl>
-  <h3>2. Video message format and JPEG pipeline (Python + C++)</h3>
+  <h3 id="video-message-format-and-jpeg-pipeline-python-c">2. Video message format and JPEG pipeline (Python + C++)</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>there was no message type for sending camera images, and raw frames from several cameras are heavy on bandwidth.</dd>
     <dt>What I did</dt><dd>designed a dedicated image message schema in IDL, modeled on ROS message types, and implemented the senders and receivers in both Python and C++. Frames are JPEG-compressed before they are published, which cuts bandwidth. I added a sequence number to the message header and frame-check fields to the publish and subscribe code, so the receiver can tell when a frame was dropped.</dd>
     <dt>Outcome</dt><dd>RGB/depth and stereo images streamed in real time. The design carried over into the SDK's <code>CompressedMessage</code> topic structure, with one topic per stream (<code>d435_color</code>, <code>d435_depth</code>, <code>eyes_stereo</code>, <code>left_hand</code>, <code>right_hand</code>).</dd>
   </dl>
   <figure class="boxed"><img alt="Camera → JPEG → CycloneDDS topic → C++ / Python subscribers" src="uploads/robros-video-pipeline.png"/><figcaption>Camera → JPEG → CycloneDDS topic → C++ / Python subscribers</figcaption></figure>
-  <h3>3. Crossing wired and wireless networks (bridge, routing, NAT)</h3>
+  <h3 id="crossing-wired-and-wireless-networks-bridge-routing-nat">3. Crossing wired and wireless networks (bridge, routing, NAT)</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>NUC-to-NUC over Wi-Fi worked, but a path that mixed LAN and Wi-Fi failed, and the bridge machine silently dropped packets between the two networks.</dd>
     <dt>What I did</dt><dd><ul><li>Switched to a re-publish design: the Jetson sends to a NUC acting as a bridge, and the bridge re-publishes to the client NUC.</li><li>Fixed node identification on Wi-Fi by pinning each node's own network interface in the CycloneDDS XML config (<code>NetworkInterfaceAddress</code>).</li><li>Traced the bridge's packet loss to the firewall and Linux kernel security filtering. I resolved it by relaxing those filters, enabling IP forwarding, setting up NAT, and controlling the routing table directly with <code>ip route</code>.</li><li>Rewrote the route scripts on the Jetson, bridge and client so each interface's gateway and route priority are set deterministically, which prevents routing-table conflicts.</li></ul></dd>
     <dt>Outcome</dt><dd>video reached the client across LAN + Wi-Fi, and later in access-point mode as well.</dd>
   </dl>
-  <h3>4. Zero-touch network configuration</h3>
+  <h3 id="zero-touch-network-configuration">4. Zero-touch network configuration</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>routes and IPs were typed by hand in each terminal. The bridge's IP changes from network to network, and switching between Wi-Fi and access-point mode broke the routes.</dd>
     <dt>What I did</dt><dd><ul><li>Tried NetworkManager Dispatcher scripts triggered on interface up/down. They caused routing-table conflicts, so I replaced them with logic that resets the IP tables and routes on every Wi-Fi/AP switch.</li><li>In AP mode, put the Jetson–NUC link and the NUC–NUC link on separate subnets so traffic doesn't collide.</li><li>Made the client find the bridge on its own by matching its MAC address against the active network range.</li><li>Generated the IP settings and the CycloneDDS XML automatically for whatever machine the code runs on.</li></ul></dd>
     <dt>Outcome</dt><dd>no manual network setup. Streaming worked in both Wi-Fi and AP mode and on a new Jetson.</dd>
   </dl>
-  <h3>5. UDP buffer tuning</h3>
+  <h3 id="udp-buffer-tuning">5. UDP buffer tuning</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>high-resolution frames overflowed the UDP socket buffers, causing intermittent frame drops.</dd>
     <dt>What I did</dt><dd>measured the kernel's receive limits under real traffic and raised the UDP buffer size to fit the load, together with CycloneDDS network settings (bandwidth, socket buffers).</dd>
     <dt>Outcome</dt><dd>a steady data flow at high resolution.</dd>
   </dl>
-  <h3>6. Runtime camera configuration service</h3>
+  <h3 id="runtime-camera-configuration-service">6. Runtime camera configuration service</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>resolution and frame rate were hard-coded, so every change meant editing code and rebuilding.</dd>
     <dt>What I did</dt><dd>moved the camera settings into config files that are parsed at startup. I then built a CycloneDDS request/response service so resolution, FPS and JPEG quality can be changed from outside while the camera node is running, and the node reconfigures itself. I ran repeated streaming tests over many resolution/FPS combinations to find the best balance between latency and image quality.</dd>
     <dt>Outcome</dt><dd>camera settings can be tuned in the field without a rebuild. The service became the SDK's camera config API: per-camera request types (<code>RealsenseConfigRequest</code>, <code>StereoConfigRequest</code>, <code>MonoConfigRequest</code>), each answered with a <code>ServiceResponse</code>.</dd>
   </dl>
   <figure class="boxed"><img alt="external config request → DDS request/response → running camera node" src="uploads/robros-config-service.png"/><figcaption>external config request → DDS request/response → running camera node</figcaption></figure>
-  <h3>7. Concurrency: per-camera threads and async callbacks</h3>
+  <h3 id="concurrency-per-camera-threads-and-async-callbacks">7. Concurrency: per-camera threads and async callbacks</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>processing several camera streams in one flow created bottlenecks, and a slow stream could hold up the others.</dd>
     <dt>What I did</dt><dd>gave each camera its own thread (receiver → decoder → queue) so the streams run independently. I also moved data handling to a callback-listener pattern, which makes processing event-driven and asynchronous and reduces coupling between modules.</dd>
     <dt>Outcome</dt><dd>multiple cameras stream at the same time without losing frames. The design also uses CPU time more efficiently.</dd>
   </dl>
-  <h3>8. Choosing the middleware: evaluating and removing Zenoh</h3>
+  <h3 id="choosing-the-middleware-evaluating-and-removing-zenoh">8. Choosing the middleware: evaluating and removing Zenoh</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>connections over the mixed network were unstable at one point, so I evaluated Zenoh as an alternative.</dd>
     <dt>What I did</dt><dd>brought Zenoh into the system and tested it. After code review I re-checked transport stability and resource use in the real setup. Tuned CycloneDDS alone met the requirements, so I removed the Zenoh dependency to keep one middleware and avoid library compatibility issues, then ran the full integration tests on CycloneDDS only.</dd>
     <dt>Outcome</dt><dd>a simpler stack with one middleware, verified end to end, including the multithreaded streams and the Cython-compiled modules together.</dd>
   </dl>
-  <h3>9. Auto-start with systemd</h3>
+  <h3 id="auto-start-with-systemd">9. Auto-start with systemd</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>the system had to start without anyone logging in, and recover when it crashed.</dd>
     <dt>What I did</dt><dd>wrote a systemd unit (<code>jetson.service</code>) that starts the communication nodes at boot, restarts them after an abnormal exit, and sets their resource priority. The service hit library paths that resolved differently under pixi and under the system, so I fixed the environment variables and executable paths in the unit file.</dd>
     <dt>Outcome</dt><dd>power on the robot and the camera system comes up on its own.</dd>
   </dl>
-  <h3>10. Cython packaging</h3>
+  <h3 id="cython-packaging">10. Cython packaging</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>pure-Python middleware modules carried interpreter overhead on large image data, and shipping plain scripts exposes the source.</dd>
     <dt>What I did</dt><dd>compiled the compute-heavy core logic into C extension modules (<code>.so</code>) with Cython and packaged the system for installation.</dd>
     <dt>Outcome</dt><dd>faster runtime execution of the core path, and the product ships as binaries, which protects ROBROS's source code.</dd>
   </dl>
-  <h3>11. Split builds for Jetson and NUC</h3>
+  <h3 id="split-builds-for-jetson-and-nuc">11. Split builds for Jetson and NUC</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>dependencies, CycloneDDS in particular, have to be built differently on each type of machine.</dd>
     <dt>What I did</dt><dd>separated the Jetson and NUC environments in <code>pyproject.toml</code> and branched the CycloneDDS installation step for each.</dd>
     <dt>Outcome</dt><dd>one codebase that installs correctly on both machine types without hand-syncing environments.</dd>
   </dl>
-  <h3>12. Multi-robot deployment</h3>
+  <h3 id="multi-robot-deployment">12. Multi-robot deployment</h3>
   <dl class="kv">
     <dt>Problem</dt><dd>the software had to run the same way on more than one robot.</dd>
     <dt>What I did</dt><dd>ported the system to new hardware and tested it there. I also debugged an SSD that a cloned Jetson failed to recognize, checking each stage from the file system to the bootloader configuration.</dd>
     <dt>Outcome</dt><dd>the same software is deployed to multiple IGRIS-C robots and works as soon as each one is powered on.</dd>
   </dl>
   <figure class="boxed"><img alt="Cython → systemd → build split → multi-robot deployment" src="uploads/robros-deploy-steps.png"/><figcaption>Cython → systemd → build split → multi-robot deployment</figcaption></figure>
-  <h3>13. SDK integration, code review and handover</h3>
+  <h3 id="sdk-integration-code-review-and-handover">13. SDK integration, code review and handover</h3>
   <ul><li>Applied code-review feedback, refactored fragmented early code into cleaner interfaces with fewer cross-module dependencies, and wrote documentation covering installation, operation, the Jetson–NUC network setup, CycloneDDS tuning parameters and troubleshooting cases, so the next engineer could run the system without trial and error.</li><li>The camera data topics and the config service are part of the Camera API in IGRIS-C's public SDK.</li></ul>
 
   <h2 id="results">Results</h2>

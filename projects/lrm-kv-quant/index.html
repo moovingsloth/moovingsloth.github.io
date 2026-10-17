@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Source+Sans+Pro:wght@200;300;400;600;700&display=swap" />
   <link rel="stylesheet" href="/assets/css/project.css" />
+  <script src="/assets/js/project-toc.js" defer></script>
 </head>
 <body>
 <main>
@@ -26,26 +27,26 @@
     </video>
   </div>
 
-  <h2 class="first">Overview</h2>
+  <h2 class="first" id="overview">Overview</h2>
   <p>Studying memory-efficient KV cache quantization for reasoning LLMs (in progress).</p>
   <p>Large Reasoning Models (LRMs) solve hard problems by writing a long chain of thought before the final answer, often hundreds to thousands of tokens. Every generated token adds keys and values to the KV cache, so for these models the cache grows with the length of the reasoning itself, not just the prompt. KV cache memory then limits how long a model can think, how many requests fit on one GPU, and whether it can run on smaller devices.</p>
   <p class="note">Status: in progress. Details will be shared after publication.</p>
 
-  <h2>Motivation</h2>
+  <h2 id="motivation">Motivation</h2>
   <ul>
     <li>In long-context inference, the KV cache becomes the main memory cost, and it grows linearly with sequence length and batch size [2].</li>
     <li>Reasoning models generate long outputs during decoding [3], so the cache keeps growing token by token during generation.</li>
     <li>Quantization lowers the bytes per stored key and value while keeping every token, which makes it complementary to methods that drop tokens [1, 2].</li>
   </ul>
 
-  <h2>Problem</h2>
+  <h2 id="problem">Problem</h2>
   <p>How can the KV cache of a reasoning LLM be stored at low precision during long chain-of-thought decoding, while keeping its final-answer accuracy?</p>
   <ul>
     <li>Errors from quantized keys and values can build up over a long reasoning trace.</li>
     <li>One wrong intermediate step can change the final answer, so accuracy has to be measured on the final answer, not only on perplexity.</li>
   </ul>
 
-  <h2>Research Direction</h2>
+  <h2 id="research-direction">Research Direction</h2>
   <ul>
     <li>Quantize the KV cache for long chain-of-thought decoding in reasoning LLMs.</li>
     <li>Keep reasoning accuracy close to the full-precision KV cache while reducing KV memory.</li>
@@ -53,7 +54,7 @@
   </ul>
   <p class="note">The specific method, models, benchmarks, and results are not public yet.</p>
 
-  <h2>My Role</h2>
+  <h2 id="my-role">My Role</h2>
   <ul>
     <li>Undergraduate Research Intern, <a href="https://emil.khu.ac.kr/" target="_blank" rel="noopener">EMIL Lab</a>, Kyung Hee University (advisor: Prof. <a href="https://www.sunghachoi.com/" target="_blank" rel="noopener">Sungha Choi</a>), Jul. 2026 &ndash; Present.</li>
     <li>Studying memory-efficient KV cache quantization for reasoning LLMs.</li>
@@ -61,10 +62,10 @@
   </ul>
   <p class="note">Tech: PyTorch, KV-cache quantization.</p>
 
-  <h2>Status</h2>
+  <h2 id="status">Status</h2>
   <p>In progress. Details will be shared after publication.</p>
 
-  <h2>References</h2>
+  <h2 id="references">References</h2>
   <p>Background work only; not results from this project.</p>
   <ol>
     <li>Z. Liu, J. Yuan, H. Jin, S. Zhong, Z. Xu, V. Braverman, B. Chen, X. Hu. <a href="https://arxiv.org/abs/2402.02750" target="_blank" rel="noopener">KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache</a>. ICML 2024.</li>
