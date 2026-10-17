@@ -191,6 +191,18 @@ body#top {
   line-height: 1.55;
 }
 
+#experience .exp-points {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--home-text);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+#experience .exp-points li {
+  margin: 0.1rem 0;
+}
+
 #current-work {
   min-height: 0 !important;
   margin: 0 !important;
