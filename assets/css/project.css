@@ -19,6 +19,7 @@ main { max-width:760px; margin:0 auto; padding:2rem 2rem 2rem; }
 .site-head h1 { margin:0; font-size:1.7rem; font-weight:700; line-height:1.25; }
 .period { margin:-1rem 0 0.4rem 0; color:var(--muted); font-size:0.9rem; }
 .role-line { margin:0 0 1.5rem 0; font-size:0.97rem; line-height:1.5; }
+.period:not(:has(+ .role-line)) { margin-bottom:1.5rem; }
 
 /* Sections */
 h2 { margin:2.25rem 0 0.75rem; padding-top:1.5rem; border-top:1px solid var(--border); font-size:1.4rem; font-weight:700; line-height:1.3; }
