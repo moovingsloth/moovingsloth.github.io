@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data-Efficient 3D Reconstruction: View Selection via Dataset Distillation · Lee DongWon</title>
+  <meta name="description" content="Selecting a small set of informative input views for 3D Gaussian Splatting, using a distillation-style teacher/student setup." />
+  <link rel="canonical" href="https://moovingsloth.github.io/projects/data-efficient-3d-recon/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Source+Sans+Pro:wght@200;300;400;600;700&display=swap" />
+  <link rel="stylesheet" href="/assets/css/project.css" />
+</head>
+<body>
+<main>
+  <a class="back" href="/">&larr; Back to home</a>
+  <header class="site-head">
+    <a class="mark" href="/" aria-label="Lee DongWon home">DL</a>
+    <h1>Data-Efficient 3D Reconstruction: View Selection via Dataset Distillation</h1>
+  </header>
+  <div class="period">Lee DongWon &middot; Mar. &ndash; Jun. 2026</div>
+
+  <h2 class="first">Overview</h2>
+  <p>3D Gaussian Splatting (3DGS) [1] builds a 3D scene from many posed images. A robot camera stream gives far more frames than reconstruction needs. This project asks which input views to keep, and uses a distillation-style setup to select a small, informative subset instead of training on every frame.</p>
+  <p class="note">Goal stated in the project slides: a camera-to-3DGS pipeline that uses 50% of the frames (baseline: 100%).</p>
+
+  <h2>Motivation</h2>
+  <ul>
+    <li>A 2D image stream only delivers the current frame. To understand space (passages, obstacles, depth), a robot needs one 3D representation that merges many observations and can be reused for SLAM, mapping, and navigation.</li>
+    <li>Among candidate representations (raw image sequence, point cloud / RGB-D, mesh / TSDF, NeRF [2], 3DGS), 3DGS was chosen as the best balance of expressiveness and practicality: it starts from RGB alone, its explicit Gaussians expose scene structure directly, and depth can be added later.</li>
+  </ul>
+
+  <h2>Problem</h2>
+  <p>Early 3DGS trials on a real robot image stream showed that a good image stream is not the same as good reconstruction input:</p>
+  <ul>
+    <li>Consecutive frames are highly redundant, with very small viewpoint changes.</li>
+    <li>Viewpoint diversity may not be sufficient.</li>
+    <li>Blur, dropped frames, and uneven quality appear in the stream.</li>
+    <li>So using every frame is not always best. The task becomes selecting keyframes to improve the reconstruction quality / cost trade-off.</li>
+  </ul>
+
+  <h2>Method</h2>
+  <ul>
+    <li><b>Pipeline.</b> RGB-D images from a RealSense camera are published from a Jetson over a CycloneDDS topic and subscribed by the host system, which feeds them to 3DGS.</li>
+    <li><b>Baselines.</b> Uniform stride, random, and angle-based sampling, compared with training on the full view set.</li>
+    <li><b>Distillation-style selection.</b> The classification task of knowledge distillation is recast as input-view selection. A teacher 3DGS is trained on all images and a student on the selected images. The student is trained with the standard 3DGS loss against ground-truth images, plus a term that matches its rendered RGB images to the teacher's renderings.</li>
+    <li><b>View scores explored.</b> Rendered-RGB score, gradient (view update) score, Gaussian visibility coverage, and pose diversity between views (pose-greedy).</li>
+  </ul>
+
+  <h2>Results</h2>
+  <figure class="boxed">
+    <img src="uploads/view-selection-psnr-ssim.png" alt="PSNR and SSIM versus number of input views for pose-greedy, random, RGB score, gradient score and coverage score selection, with the full 161-view reference line" loading="lazy" />
+  </figure>
+  <ul>
+    <li>PSNR and SSIM were measured as the number of selected views grows from 5 to 160, against the full set of 161 views.</li>
+    <li>Pose-greedy selection gave the highest PSNR and SSIM at small view counts. All strategies approach the full-view quality as the number of views grows toward 160.</li>
+  </ul>
+  <p class="note">Source: project progress slides (May 2026), &ldquo;Result&rdquo; slide.</p>
+
+  <h2>My Role</h2>
+  <ul>
+    <li>Built the CycloneDDS image-streaming pipeline (RealSense on Jetson, publish/subscribe to the host) that provides the reconstruction input.</li>
+    <li>Ran the baseline 3DGS reconstructions and the frame-sampling baselines, and analyzed frame redundancy in the robot stream.</li>
+    <li>Designed the distillation-style view-selection setup and compared view-scoring strategies on PSNR / SSIM.</li>
+  </ul>
+  <p class="note">Tech: 3D Gaussian Splatting, PyTorch, CycloneDDS, Intel RealSense, NVIDIA Jetson.</p>
+
+  <h2>Next Steps</h2>
+  <ul>
+    <li>Improve the distillation architecture.</li>
+    <li>Validate on other scenes and datasets.</li>
+    <li>Run it on the real camera pipeline.</li>
+  </ul>
+
+  <h2>References</h2>
+  <p>Background work only; not results from this project.</p>
+  <ol>
+    <li>B. Kerbl, G. Kopanas, T. Leimk&uuml;hler, G. Drettakis. <a href="https://arxiv.org/abs/2308.04079" target="_blank" rel="noopener">3D Gaussian Splatting for Real-Time Radiance Field Rendering</a>. SIGGRAPH 2023.</li>
+    <li>B. Mildenhall, P. P. Srinivasan, M. Tancik, J. T. Barron, R. Ramamoorthi, R. Ng. <a href="https://arxiv.org/abs/2003.08934" target="_blank" rel="noopener">NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis</a>. ECCV 2020.</li>
+    <li>G. Hinton, O. Vinyals, J. Dean. <a href="https://arxiv.org/abs/1503.02531" target="_blank" rel="noopener">Distilling the Knowledge in a Neural Network</a>. arXiv:1503.02531.</li>
+  </ol>
+</main>
+<footer class="site-foot">
+  <div class="inner"><span>&copy; Lee DongWon</span><a href="/">&larr; Back to home</a></div>
+</footer>
+</body>
+</html>
