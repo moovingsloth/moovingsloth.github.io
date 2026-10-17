@@ -21,6 +21,12 @@
   <div class="period">Researcher, 3D Gaussian Splatting (Robot Camera View Selection) &middot; Mar. &ndash; Jun. 2026</div>
   <p class="role-line">Built a robot-camera-to-3DGS pipeline end to end and designed distillation-style view selection to keep a small, informative subset of frames, with pose-greedy selection best on PSNR/SSIM at small view counts.</p>
 
+  <div class="video-wrap">
+    <video id="dataefficien-video" autoplay muted loop playsinline controls preload="metadata" style="background:#fff;border:1px solid #e0e0e0;" poster="/projects/data-efficient-3d-recon/teaser_poster.jpg">
+      <source src="/projects/data-efficient-3d-recon/teaser.mp4" type="video/mp4" />
+    </video>
+  </div>
+
   <h2 class="first">Overview</h2>
   <p>3D Gaussian Splatting (3DGS) [1] builds a 3D scene from many posed images. A robot camera stream gives far more frames than reconstruction needs. This project asks which input views to keep, and uses a distillation-style setup to select a small, informative subset instead of training on every frame.</p>
   <p class="note">Goal stated in the project slides: a camera-to-3DGS pipeline that uses 50% of the frames (baseline: 100%).</p>

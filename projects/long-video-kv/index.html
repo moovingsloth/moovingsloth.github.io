@@ -20,6 +20,12 @@
   </header>
   <div class="period">Lee DongWon &middot; Jun. 2026 &ndash; Present</div>
 
+  <div class="video-wrap">
+    <video id="longvideokv-video" autoplay muted loop playsinline controls preload="metadata" style="background:#fff;border:1px solid #e0e0e0;" poster="/projects/long-video-kv/teaser_poster.jpg">
+      <source src="/projects/long-video-kv/teaser.mp4" type="video/mp4" />
+    </video>
+  </div>
+
   <h2 class="first">Overview</h2>
   <p>With streaming long video, the KV cache grows with the number of frames: Qwen2-VL-7B at 768 frames holds about 50K tokens of full KV. InfiniPot-V compresses it to a 6K budget. I store the kept KV cache in INT4 instead of FP16. At the same 6K budget, INT4 reaches Video-MME 63.5 vs 62.8 and MLVU 66.1 vs 65.8 (FP16), using about 1/3.1 the KV bytes (164 B vs 512 B per token per head).</p>
 

@@ -20,6 +20,12 @@
   </header>
   <div class="period">Lee DongWon &middot; Jul. 2026 &ndash; Present</div>
 
+  <div class="video-wrap">
+    <video id="lrmkvquant-video" autoplay muted loop playsinline controls preload="metadata" style="background:#fff;border:1px solid #e0e0e0;" poster="/projects/lrm-kv-quant/teaser_poster.jpg">
+      <source src="/projects/lrm-kv-quant/teaser.mp4" type="video/mp4" />
+    </video>
+  </div>
+
   <h2 class="first">Overview</h2>
   <p>Studying memory-efficient KV cache quantization for reasoning LLMs (in progress).</p>
   <p>Large Reasoning Models (LRMs) solve hard problems by writing a long chain of thought before the final answer, often hundreds to thousands of tokens. Every generated token adds keys and values to the KV cache, so for these models the cache grows with the length of the reasoning itself, not just the prompt. KV cache memory then limits how long a model can think, how many requests fit on one GPU, and whether it can run on smaller devices.</p>
