@@ -10,6 +10,11 @@
   var nav = document.createElement('nav');
   nav.className = 'page-toc';
   nav.setAttribute('aria-label', 'Contents');
+  var home = document.createElement('a');
+  home.className = 'toc-home';
+  home.href = '/';
+  home.textContent = '\u2190 Back to home';
+  nav.appendChild(home);
   var label = document.createElement('div');
   label.className = 'toc-label';
   label.textContent = 'Contents';
