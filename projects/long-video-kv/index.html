@@ -9,38 +9,7 @@
   <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Source+Sans+Pro:wght@200;300;400;600;700&display=swap" />
-  <style>
-    :root { --text:#2c2c2c; --muted:#666; --border:#e0e0e0; --bar:#111; --bar-light:#aaa; }
-    * { box-sizing: border-box; }
-    body { margin:0; color:var(--text); background:#fff; font-family:"Source Sans Pro",-apple-system,"Segoe UI",Roboto,sans-serif; font-size:17px; line-height:1.6; }
-    a { color:var(--text); }
-    main { max-width:760px; margin:0 auto; padding:2rem 2rem 4rem; }
-    .site-head { display:flex; align-items:center; gap:0.9rem; margin-bottom:2rem; }
-    .site-head .mark { display:flex; flex:none; align-items:center; justify-content:center; width:44px; height:44px; color:#fff; background:#111; border-radius:6px; font-size:1rem; font-weight:700; text-decoration:none; }
-    .site-head h1 { margin:0; font-size:1.7rem; font-weight:700; line-height:1.25; }
-    .period { margin:-1rem 0 1.5rem 0; color:var(--muted); font-size:0.9rem; }
-    .back { display:inline-block; margin-bottom:1.5rem; color:var(--muted); font-size:0.9rem; }
-    h2 { margin:2.25rem 0 0.75rem; padding-top:1.5rem; border-top:1px solid var(--border); font-size:1.4rem; font-weight:700; line-height:1.3; }
-    p, li { font-size:0.97rem; }
-    p { margin:0.6rem 0; }
-    ul { padding-left:1.25rem; }
-    .scroll { overflow-x:auto; margin:0.75rem 0 0.5rem; }
-    table { width:100%; border-collapse:collapse; font-size:0.88rem; font-variant-numeric:tabular-nums; }
-    th, td { padding:0.4rem 0.6rem; text-align:left; white-space:nowrap; border-bottom:1px solid var(--border); }
-    th { font-weight:600; border-bottom:1px solid var(--text); }
-    td.n, th.n { text-align:right; }
-    tr.ref td { color:var(--muted); }
-    caption { padding:0 0 0.4rem; text-align:left; font-weight:600; }
-    .note { margin:0.25rem 0 0; color:var(--muted); font-size:0.82rem; line-height:1.5; }
-    .bars { margin:0.75rem 0; }
-    .bar-row { display:grid; grid-template-columns:90px minmax(0,1fr) 60px; gap:0.6rem; align-items:center; margin:0.3rem 0; font-size:0.88rem; }
-    .bar-row .track { height:16px; }
-    .bar-row .fill { height:100%; background:var(--bar); }
-    .bar-row .fill.light { background:var(--bar-light); }
-    .bar-row .val { font-variant-numeric:tabular-nums; text-align:right; }
-    code { font-family:"Roboto Mono",monospace; font-size:0.85em; }
-    @media (max-width:640px) { main { padding:1.25rem 1.25rem 3rem; } .site-head h1 { font-size:1.35rem; } }
-  </style>
+  <link rel="stylesheet" href="/assets/css/project.css" />
 </head>
 <body>
 <main>
@@ -51,7 +20,7 @@
   </header>
   <div class="period">Lee DongWon &middot; Sep. 2026 &ndash; Present</div>
 
-  <h2 style="border-top:0;padding-top:0;margin-top:0">Overview</h2>
+  <h2 class="first">Overview</h2>
   <p>With streaming long video, the KV cache grows with the number of frames: Qwen2-VL-7B at 768 frames holds about 50K tokens of full KV. InfiniPot-V compresses it to a 6K budget. I store the kept KV cache in INT4 instead of FP16. At the same 6K budget, INT4 reaches Video-MME 63.5 vs 62.8 and MLVU 66.1 vs 65.8 (FP16), using about 1/3.1 the KV bytes (164 B vs 512 B per token per head).</p>
 
   <h2>Approach</h2>
@@ -89,10 +58,10 @@
   <p class="note">&dagger; From the InfiniPot-V paper. Full KV rows are reference rows (50K budget). &ldquo;Full KV (ours)&rdquo; uses Qwen2-VL-7B with FP16 KV at 50K, over 2,174 questions. Bold marks the best value per column among the 6K methods (Full KV rows excluded); ties are all bold.</p>
 
   <div class="bars" aria-label="Average accuracy, FP16 vs INT4 at 6K">
-    <div class="bar-row"><span>Video-MME FP16</span><span class="track"><span class="fill light" style="display:block;width:62.8%"></span></span><span class="val">62.8</span></div>
-    <div class="bar-row"><span>Video-MME INT4</span><span class="track"><span class="fill" style="display:block;width:63.5%"></span></span><span class="val">63.5</span></div>
-    <div class="bar-row"><span>MLVU FP16</span><span class="track"><span class="fill light" style="display:block;width:65.8%"></span></span><span class="val">65.8</span></div>
-    <div class="bar-row"><span>MLVU INT4</span><span class="track"><span class="fill" style="display:block;width:66.1%"></span></span><span class="val">66.1</span></div>
+    <div class="bar-row"><span>Video-MME FP16</span><span class="track"><span class="fill light" style="width:62.8%"></span></span><span class="val">62.8</span></div>
+    <div class="bar-row"><span>Video-MME INT4</span><span class="track"><span class="fill" style="width:63.5%"></span></span><span class="val">63.5</span></div>
+    <div class="bar-row"><span>MLVU FP16</span><span class="track"><span class="fill light" style="width:65.8%"></span></span><span class="val">65.8</span></div>
+    <div class="bar-row"><span>MLVU INT4</span><span class="track"><span class="fill" style="width:66.1%"></span></span><span class="val">66.1</span></div>
   </div>
   <p class="note">Average accuracy at 6K (bar length = score out of 100; FP16 = InfiniPot-V reproduced).</p>
 
@@ -125,12 +94,15 @@
   <p class="note">About 1/3.1 the FP16 size. K per channel, V per token, group size 32, last 128 tokens FP16.</p>
 
   <div class="bars" aria-label="KV bytes per token per head">
-    <div class="bar-row"><span>FP16</span><span class="track"><span class="fill light" style="display:block;width:100%"></span></span><span class="val">512 B</span></div>
-    <div class="bar-row"><span>INT4 KIVI</span><span class="track"><span class="fill" style="display:block;width:32.03125%"></span></span><span class="val">164 B</span></div>
+    <div class="bar-row"><span>FP16</span><span class="track"><span class="fill light" style="width:100%"></span></span><span class="val">512 B</span></div>
+    <div class="bar-row"><span>INT4 KIVI</span><span class="track"><span class="fill" style="width:32.03125%"></span></span><span class="val">164 B</span></div>
   </div>
 
   <h2>References</h2>
   <p>&dagger; InfiniPot-V paper (full citation: [TBD]).</p>
 </main>
+<footer class="site-foot">
+  <div class="inner"><span>&copy; Lee DongWon</span><a href="/">&larr; Back to home</a></div>
+</footer>
 </body>
 </html>
