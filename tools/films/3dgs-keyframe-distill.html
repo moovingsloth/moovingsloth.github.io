@@ -1,0 +1,56 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="film.css">
+<style>
+svg{position:absolute;left:0;top:0;width:1136px;height:434px;overflow:visible}
+text{font-family:"Schibsted Grotesk";fill:var(--dim);font-size:18px;font-weight:500}
+.stats{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:start;padding-top:20px}
+.stats div{border:1.5px solid var(--line);background:var(--panel);border-radius:18px;padding:34px 30px;height:300px}
+.stats b{display:block;white-space:nowrap;font-size:62px;font-weight:750;letter-spacing:-.04em;line-height:1}
+.stats span{display:block;margin-top:16px;font-size:21px;color:var(--dim);line-height:1.4}
+.cave{position:absolute;left:0;top:30px;right:0}
+.cave p{font-size:30px;font-weight:600;line-height:1.35;margin-bottom:26px;padding-left:26px;border-left:4px solid var(--amber)}
+.cave p small{display:block;font-size:20px;color:var(--dim);font-weight:450;margin-top:6px}
+</style>
+<body>
+<section class="scene" id="s1" data-dur="6">
+  <div class="tag"><b>3DGS keyframe selection</b> &nbsp;TUM RGB-D, gsplat</div>
+  <div class="stage"><svg viewBox="0 0 1136 434" id="g"></svg></div>
+  <div class="cap">Pick frames that are sharp and that cover the trajectory.<small>Uniform sampling ignores blur; my selection scores sharpness and coverage together.</small></div>
+</section>
+<section class="scene" id="s2" data-dur="5.5">
+  <div class="tag"><b>Result</b> &nbsp;versus uniform sampling, 30 and 60 frames</div>
+  <div class="stage"><div class="stats">
+    <div data-a="in" style="--d:.3s"><b class="amber">+0.55 dB</b><span>PSNR on average<br>range 0.0 to 1.5 across six scene and budget settings</span></div>
+    <div data-a="in" style="--d:.9s"><b class="amber">+0.015</b><span>SSIM on average<br>range 0.004 to 0.025</span></div>
+    <div data-a="in" style="--d:1.5s"><b>1.7–21.1%</b><span>of the available training frames used</span></div>
+  </div></div>
+  <div class="cap">A modest gain over uniform sampling, from a small share of the frames.<small>Three TUM RGB-D sequences, two seeds, 7k iterations.</small></div>
+</section>
+<section class="scene" id="s3" data-dur="5.5">
+  <div class="tag"><b>What did not hold</b></div>
+  <div class="stage"><div class="cave">
+    <p data-a="in" style="--d:.3s">Results varied by scene.<small>On desk at 60 frames, the PSNR difference was within seed noise.</small></p>
+    <p data-a="in" style="--d:1.3s">Blur-only selection beat my method on fr2_xyz.<small>A simpler baseline was better on that sequence.</small></p>
+    <p data-a="in" style="--d:2.3s">LPIPS was not measured.</p>
+  </div></div>
+  <div class="cap">Reported with its limits.<small>3DGS Keyframe Distillation · Lee DongWon</small></div>
+</section>
+<script>
+const NS='http://www.w3.org/2000/svg',g=document.getElementById('g');
+// schematic sharpness curve with blur dips
+const N=220,W=1136,pts=[];
+for(let i=0;i<N;i++){const u=i/(N-1);let s=0.62+0.12*Math.sin(u*9)+0.08*Math.sin(u*31+1);
+ [[.14,.05],[.36,.06],[.55,.04],[.79,.07]].forEach(([c,w])=>{s-=0.5*Math.exp(-((u-c)**2)/(2*w*w/6));});pts.push([u*W,230-s*210,s]);}
+let d='M'+pts.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L');
+g.innerHTML=`<text x="0" y="16">sharpness per frame (schematic)</text><path d="${d}" fill="none" stroke="var(--lilac)" stroke-width="2.5" data-a="draw" style="--len:2600;--t:1.6s;--d:.2s;animation-timing-function:linear"/>
+<text x="0" y="278">uniform</text><text x="0" y="352" style="fill:var(--amber)">sharpness + coverage</text><text x="1136" y="424" text-anchor="end">frame id →</text>`;
+const K=12;
+for(let k=0;k<K;k++){const i=Math.round((k+.5)*N/K);const p=pts[i];const blurry=p[2]<0.42;
+ const r=document.createElementNS(NS,'rect');r.setAttribute('x',p[0]-3);r.setAttribute('y',290);r.setAttribute('width',6);r.setAttribute('height',26);r.setAttribute('rx',2);r.setAttribute('fill',blurry?'var(--bad)':'var(--dim)');r.setAttribute('data-a','fade');r.style.setProperty('--d',(2+k*0.07)+'s');r.style.setProperty('--t','.2s');g.appendChild(r);
+ // ours: best sharpness within the same segment (keeps coverage)
+ let b=Math.round(k*N/K);for(let j=Math.round(k*N/K);j<Math.round((k+1)*N/K);j++)if(pts[j][2]>pts[b][2])b=j;
+ const q=pts[b];const o=document.createElementNS(NS,'rect');o.setAttribute('x',q[0]-3);o.setAttribute('y',364);o.setAttribute('width',6);o.setAttribute('height',26);o.setAttribute('rx',2);o.setAttribute('fill','var(--amber)');o.setAttribute('data-a','fade');o.style.setProperty('--d',(3.4+k*0.07)+'s');o.style.setProperty('--t','.2s');g.appendChild(o);
+ const c=document.createElementNS(NS,'circle');c.setAttribute('cx',q[0]);c.setAttribute('cy',q[1]);c.setAttribute('r',6);c.setAttribute('fill','var(--amber)');c.setAttribute('data-a','fade');c.style.setProperty('--d',(3.4+k*0.07)+'s');c.style.setProperty('--t','.2s');g.appendChild(c);}
+g.insertAdjacentHTML('beforeend','<text x="1136" y="278" text-anchor="end" style="fill:var(--bad)" data-a="fade">red = lands on a blurry frame</text>');
+g.lastChild.style.setProperty('--d','2.9s');
+</script>
+<script src="film.js"></script>

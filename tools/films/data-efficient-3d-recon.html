@@ -1,0 +1,75 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="film.css">
+<style>
+svg{position:absolute;left:0;top:0;width:1136px;height:434px;overflow:visible}
+text{font-family:"Schibsted Grotesk";fill:var(--paper);font-size:20px;font-weight:600}
+text.s{font-size:17px;font-weight:450;fill:var(--dim)}
+.v{fill:var(--lilac)}
+.side{position:absolute;right:0;top:20px;width:430px}
+.side .big{font-size:110px;font-weight:750;letter-spacing:-.04em;line-height:1}
+.side p{font-size:22px;color:var(--dim);line-height:1.4;margin-top:8px}
+.thumbs{display:flex;gap:10px;margin-top:22px}
+.thumbs i{width:98px;height:66px;border-radius:6px;background:linear-gradient(135deg,#3b2850,#5d3f7d);border:1.5px solid var(--bad);position:relative;overflow:hidden}
+.thumbs i::after{content:"";position:absolute;left:var(--x);bottom:10px;width:40px;height:26px;border-radius:5px;background:#0004}
+.ts{display:flex;align-items:center;gap:18px;margin-top:26px;font-size:20px}
+.ts div{padding:14px 18px;border-radius:10px;border:1.5px solid var(--line);background:var(--panel);line-height:1.3}
+.ts div small{display:block;color:var(--dim);font-size:16px}
+.fig{position:absolute;left:0;right:0;top:0;height:434px;background:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.fig img{height:420px}
+@keyframes sel{to{fill:var(--amber);r:9}}
+@keyframes red{to{fill:var(--bad)}}
+@keyframes fadeo{to{opacity:.18}}
+</style>
+<body>
+<section class="scene" id="s1" data-dur="5">
+  <div class="tag"><b>3D Gaussian Splatting</b> &nbsp;robot camera stream</div>
+  <div class="stage">
+    <svg viewBox="0 0 1136 434" id="g1"></svg>
+    <div class="side"><div class="big num" data-count="0,161,0.4,3">0</div><p>posed views from one pass of a robot camera</p></div>
+  </div>
+  <div class="cap">A robot camera gives far more frames than reconstruction needs.<small>RealSense on a Jetson, streamed over CycloneDDS into 3DGS.</small></div>
+</section>
+<section class="scene" id="s2" data-dur="4.5">
+  <div class="tag"><b>The problem</b> &nbsp;a good stream is not good input</div>
+  <div class="stage">
+    <svg viewBox="0 0 1136 434" id="g2"></svg>
+    <div class="side" data-a="in" style="--d:1.4s"><p style="color:var(--paper);font-size:26px;font-weight:600">Consecutive frames barely move.</p><div class="thumbs"><i style="--x:20px"></i><i style="--x:23px"></i><i style="--x:26px"></i><i style="--x:29px"></i></div><p>Add blur, dropped frames and uneven quality.</p></div>
+  </div>
+  <div class="cap">Neighbouring views are highly redundant.<small>Training on every frame is not always the best use of compute.</small></div>
+</section>
+<section class="scene" id="s3" data-dur="5.5">
+  <div class="tag"><b>View selection</b> &nbsp;distillation-style</div>
+  <div class="stage">
+    <svg viewBox="0 0 1136 434" id="g3"></svg>
+    <div class="side" data-a="in" style="--d:2.4s"><p style="color:var(--paper);font-size:26px;font-weight:600">Keep a small, <span class="amber">diverse</span> subset.</p>
+      <div class="ts"><div>Teacher<small>3DGS on all views</small></div><span class="dimc">guides</span><div style="border-color:var(--amber)">Student<small>3DGS on selected</small></div></div>
+      <p style="font-size:18px">Student loss: ground-truth images plus matching the teacher's renders.</p></div>
+  </div>
+  <div class="cap">Pose-greedy selection picks views that are far apart in pose.<small>Also compared: random, RGB score, gradient score, coverage score.</small></div>
+</section>
+<section class="scene" id="s4" data-dur="5.5">
+  <div class="tag"><b>Result</b> &nbsp;5 to 160 views, against the full 161</div>
+  <div class="stage"><div class="fig" data-a="in" style="--d:.3s"><img src="view-selection-psnr-ssim.png"></div></div>
+  <div class="cap">Pose-greedy gave the best PSNR and SSIM at small view counts.<small>Data-Efficient 3D Reconstruction · Lee DongWon</small></div>
+</section>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function build(id,mode){const g=document.getElementById(id);
+ // scene object
+ g.innerHTML='<g opacity=".9"><rect x="262" y="176" width="110" height="70" rx="10" fill="#3b2850" stroke="var(--line)" stroke-width="1.5"/><rect x="292" y="150" width="50" height="34" rx="6" fill="#5d3f7d"/><text x="317" y="286" text-anchor="middle" class="s">scene</text></g>';
+ const N=161;const pts=[];
+ for(let i=0;i<N;i++){ // uneven speed: slow segments create clusters
+   let u=i/N; let a=-2.2+u*Math.PI*2*0.93 + 0.22*Math.sin(u*Math.PI*6); const rx=250+16*Math.sin(u*Math.PI*6),ry=178+10*Math.cos(u*Math.PI*8);
+   pts.push([317+rx*Math.cos(a),214+ry*Math.sin(a)]);}
+ // farthest-point (pose-greedy style) selection of 20
+ const sel=[0];const d=pts.map(p=>Math.hypot(p[0]-pts[0][0],p[1]-pts[0][1]));
+ while(sel.length<20){let b=0;for(let i=0;i<N;i++)if(d[i]>d[b])b=i;sel.push(b);for(let i=0;i<N;i++)d[i]=Math.min(d[i],Math.hypot(pts[i][0]-pts[b][0],pts[i][1]-pts[b][1]));}
+ pts.forEach((p,i)=>{const c=document.createElementNS(NS,'circle');c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',5);c.setAttribute('class','v');
+  if(mode==1){c.setAttribute('data-a','fade');c.style.setProperty('--d',(0.4+i*3/N)+'s');c.style.setProperty('--t','.15s');}
+  if(mode==2&&i>=52&&i<=70){c.style.animation='red .4s '+(0.6+(i-52)*0.03)+'s both';}
+  if(mode==3){if(sel.includes(i))c.style.animation='sel .4s '+(0.6+sel.indexOf(i)*0.08)+'s both';else c.style.animation='fadeo .6s 1s both';}
+  g.appendChild(c);});
+ if(mode==3){const t=document.createElementNS(NS,'text');t.setAttribute('x',317);t.setAttribute('y',424);t.setAttribute('text-anchor','middle');t.setAttribute('class','s');t.textContent='illustration: 20 of 161 views selected';g.appendChild(t);}
+}
+build('g1',1);build('g2',2);build('g3',3);
+</script>
+<script src="film.js"></script>

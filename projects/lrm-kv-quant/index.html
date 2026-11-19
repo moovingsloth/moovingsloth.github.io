@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Memory-Efficient KV Cache Quantization for Reasoning LLMs · Lee DongWon</title>
+  <meta name="description" content="Studying memory-efficient KV cache quantization for reasoning LLMs at EMIL Lab, Kyung Hee University (in progress)." />
+  <meta name="author" content="Lee DongWon" />
+  <link rel="canonical" href="https://moovingsloth.github.io/projects/lrm-kv-quant/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="apple-touch-icon" href="/media/sloth-icon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#40045C" />
+  <meta property="og:site_name" content="Lee DongWon" />
+  <meta property="og:title" content="Memory-Efficient KV Cache Quantization for Reasoning LLMs · Lee DongWon" />
+  <meta property="og:description" content="Studying memory-efficient KV cache quantization for reasoning LLMs at EMIL Lab, Kyung Hee University (in progress)." />
+  <meta property="og:url" content="https://moovingsloth.github.io/projects/lrm-kv-quant/" />
+  <meta property="og:image" content="https://moovingsloth.github.io/assets/projects/lrm-kv-quant/film.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preload" href="/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="me" href="/">Lee DongWon</a>
+  <nav aria-label="Site">
+    <a href="/#projects" aria-current="page">Projects</a>
+    <a href="/#experience">Experience</a>
+    <a href="/assets/cv/Dongwon_Lee_CV.pdf">CV</a>
+  </nav>
+</header>
+<main>
+<div class="cover">
+  <video autoplay muted loop playsinline preload="metadata" poster="/assets/projects/lrm-kv-quant/cover.jpg" aria-hidden="true" tabindex="-1"><source src="/assets/projects/lrm-kv-quant/cover.mp4" type="video/mp4" /></video>
+</div>
+<div class="phead">
+  <h1>Memory-Efficient KV Cache Quantization for Reasoning LLMs</h1>
+  <p class="role">Undergraduate Research Intern, EMIL Lab, Kyung Hee University. Jul. 2026 to present.</p>
+  <p class="lead">Reasoning models write long chains of thought, and every token grows the KV cache. I study how to store that cache in fewer bits without changing the final answer.</p>
+</div>
+<div class="film">
+  <figure>
+    <video controls muted playsinline preload="metadata" poster="/assets/projects/lrm-kv-quant/film.jpg"><source src="/assets/projects/lrm-kv-quant/film.mp4" type="video/mp4" /></video>
+    <figcaption>The research question in 21 seconds. No sound.</figcaption>
+  </figure>
+</div>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><p>On this page</p></nav>
+  <article class="prose">
+  <h2 id="overview">Overview</h2>
+  <p>Studying memory-efficient KV cache quantization for reasoning LLMs (in progress).</p>
+  <p>Large Reasoning Models (LRMs) solve hard problems by writing a long chain of thought before the final answer, often hundreds to thousands of tokens. Every generated token adds keys and values to the KV cache, so for these models the cache grows with the length of the reasoning itself, not just the prompt. KV cache memory then limits how long a model can think, how many requests fit on one GPU, and whether it can run on smaller devices.</p>
+  <p class="note">Status: in progress. Details will be shared after publication.</p>
+
+  <figure><img src="/assets/projects/lrm-kv-quant/still-1.jpg" alt="A chain of reasoning tokens ending in an answer, with one cache block stacked per token" width="1600" height="900" loading="lazy" /><figcaption>Each token of the chain of thought adds one more entry to the KV cache (illustration).</figcaption></figure>
+  <h2 id="motivation">Motivation</h2>
+  <ul>
+    <li>In long-context inference, the KV cache becomes the main memory cost, and it grows linearly with sequence length and batch size [2].</li>
+    <li>Reasoning models generate long outputs during decoding [3], so the cache keeps growing token by token during generation.</li>
+    <li>Quantization lowers the bytes per stored key and value while keeping every token, which makes it complementary to methods that drop tokens [1, 2].</li>
+  </ul>
+
+  <figure><img src="/assets/projects/lrm-kv-quant/still-2.jpg" alt="Bars growing token by token until they cross a dashed device-memory line" width="1600" height="900" loading="lazy" /><figcaption>The cache grows for as long as the model reasons (illustration, not measured data).</figcaption></figure>
+  <h2 id="problem">Problem</h2>
+  <p>How can the KV cache of a reasoning LLM be stored at low precision during long chain-of-thought decoding, while keeping its final-answer accuracy?</p>
+  <ul>
+    <li>Errors from quantized keys and values can build up over a long reasoning trace.</li>
+    <li>One wrong intermediate step can change the final answer, so accuracy has to be measured on the final answer, not only on perplexity.</li>
+  </ul>
+
+  <h2 id="research-direction">Research Direction</h2>
+  <ul>
+    <li>Quantize the KV cache for long chain-of-thought decoding in reasoning LLMs.</li>
+    <li>Keep reasoning accuracy close to the full-precision KV cache while reducing KV memory.</li>
+    <li>Builds on public KV cache quantization work [1, 2].</li>
+  </ul>
+  <p class="note">The specific method, models, benchmarks, and results are not public yet.</p>
+
+  <figure><img src="/assets/projects/lrm-kv-quant/still-4.jpg" alt="Cache blocks stored at different heights: important tokens tall, the rest short" width="1600" height="900" loading="lazy" /><figcaption>Direction: spend bits where they matter (illustration of the idea, not the method).</figcaption></figure>
+  <h2 id="my-role">My Role</h2>
+  <ul>
+    <li>Undergraduate Research Intern, <a href="https://emil.khu.ac.kr/" target="_blank" rel="noopener">EMIL Lab</a>, Kyung Hee University (advisor: Prof. <a href="https://www.sunghachoi.com/" target="_blank" rel="noopener">Sungha Choi</a>), Jul. 2026 &ndash; Present.</li>
+    <li>Studying memory-efficient KV cache quantization for reasoning LLMs.</li>
+    <li>Specific contributions will be listed after publication.</li>
+  </ul>
+  <p class="note">Tech: PyTorch, KV-cache quantization.</p>
+
+  <h2 id="status">Status</h2>
+  <p>In progress. Details will be shared after publication.</p>
+
+  <h2 id="references">References</h2>
+  <p>Background work only; not results from this project.</p>
+  <ol>
+    <li>Z. Liu, J. Yuan, H. Jin, S. Zhong, Z. Xu, V. Braverman, B. Chen, X. Hu. <a href="https://arxiv.org/abs/2402.02750" target="_blank" rel="noopener">KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache</a>. ICML 2024.</li>
+    <li>C. Hooper, S. Kim, H. Mohammadzadeh, M. W. Mahoney, Y. S. Shao, K. Keutzer, A. Gholami. <a href="https://arxiv.org/abs/2401.18079" target="_blank" rel="noopener">KVQuant: Towards 10 Million Context Length LLM Inference with KV Cache Quantization</a>. NeurIPS 2024.</li>
+    <li>DeepSeek-AI. <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noopener">DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</a>. arXiv:2501.12948.</li>
+  </ol>
+  </article>
+</div>
+<section class="more">
+  <h2>More projects</h2>
+  <ul>
+    <li><a href="/projects/robros/"><img src="/assets/projects/robros/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>Real-time camera streaming for a humanoid robot</b></a></li>
+    <li><a href="/projects/spark-llm-inference-opt/"><img src="/assets/projects/spark-llm-inference-opt/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>LLM inference optimization on DGX Spark</b></a></li>
+    <li><a href="/projects/3dgs-keyframe-distill/"><img src="/assets/projects/3dgs-keyframe-distill/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>Keyframe selection for 3D Gaussian Splatting</b></a></li>
+  </ul>
+</section>
+</main>
+<footer class="foot">
+  <span>&copy; Lee DongWon</span>
+  <span><a href="mailto:dongwon.lee@khu.ac.kr">dongwon.lee@khu.ac.kr</a></span>
+</footer>
+</body>
+</html>

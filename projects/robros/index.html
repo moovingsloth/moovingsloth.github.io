@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Real-time Camera Streaming for the IGRIS-C Humanoid · Lee DongWon</title>
+  <meta name="description" content="Real-time Camera Streaming for the IGRIS-C Humanoid: Software Engineer Internship, ROBROS." />
+  <meta name="author" content="Lee DongWon" />
+  <link rel="canonical" href="https://moovingsloth.github.io/projects/robros/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="apple-touch-icon" href="/media/sloth-icon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#40045C" />
+  <meta property="og:site_name" content="Lee DongWon" />
+  <meta property="og:title" content="Real-time Camera Streaming for the IGRIS-C Humanoid · Lee DongWon" />
+  <meta property="og:description" content="Real-time Camera Streaming for the IGRIS-C Humanoid: Software Engineer Internship, ROBROS." />
+  <meta property="og:url" content="https://moovingsloth.github.io/projects/robros/" />
+  <meta property="og:image" content="https://moovingsloth.github.io/assets/projects/robros/film.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preload" href="/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="me" href="/">Lee DongWon</a>
+  <nav aria-label="Site">
+    <a href="/#projects" aria-current="page">Projects</a>
+    <a href="/#experience">Experience</a>
+    <a href="/assets/cv/Dongwon_Lee_CV.pdf">CV</a>
+  </nav>
+</header>
+<main>
+<div class="cover">
+  <video autoplay muted loop playsinline preload="metadata" poster="/assets/projects/robros/cover.jpg" aria-hidden="true" tabindex="-1"><source src="/assets/projects/robros/cover.mp4" type="video/mp4" /></video>
+</div>
+<div class="phead">
+  <h1>Real-time Camera Streaming for the IGRIS-C Humanoid</h1>
+  <p class="role">Software Engineer Internship, ROBROS (IGRIS-C humanoid robot). Dec. 2025 to Mar. 2026.</p>
+  <p class="lead">Built and shipped IGRIS-C&rsquo;s camera communication system end to end on the physical robot, streaming multiple cameras in real time over LAN and Wi-Fi. It is now part of the public SDK Camera API.</p>
+</div>
+<div class="film">
+  <figure>
+    <video controls muted playsinline preload="metadata" poster="/assets/projects/robros/film.jpg"><source src="/assets/projects/robros/film.mp4" type="video/mp4" /></video>
+    <figcaption>The system in 21 seconds. No sound.</figcaption>
+  </figure>
+</div>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><p>On this page</p></nav>
+  <article class="prose">
+  <h2 id="tldr">TL;DR</h2>
+  <p class="lead">At ROBROS I owned the camera communication system of IGRIS-C, a humanoid robot that ROBROS sells. I built it end to end: the video message format, the CycloneDDS publishers and subscribers in Python and C++, the network setup that carries video across wired LAN and Wi-Fi, a service for changing camera settings while the robot runs, and the packaging that starts everything automatically when the robot is switched on. The result is not a research prototype: it is part of the Camera API in IGRIS-C's public SDK.</p>
+  <div class="flow" aria-label="Jetson to NUC Bridge over LAN, NUC Bridge to NUC Client over WiFi">
+    <div class="node">Jetson</div>
+    <div class="edge"><span>LAN</span><i></i><i></i><i></i></div>
+    <div class="node dark">NUC Bridge</div>
+    <div class="edge dashed"><span>WiFi</span><i></i><i></i><i></i></div>
+    <div class="node">NUC Client</div>
+  </div>
+
+  <figure class="boxed"><img src="/assets/projects/robros/robros-hardware-v2.png" alt="IGRIS-C humanoid with its Jetson Orin Nano, Intel NUC, RealSense D435, stereo camera and fisheye hand cameras" width="2400" height="1200" loading="lazy" /><figcaption>Compute boards and cameras on IGRIS-C.</figcaption></figure>
+  <h2 id="glance">At a glance</h2>
+  <dl class="kv">
+    <dt>Role</dt><dd>Software Engineer Internship, development team</dd>
+    <dt>Scope</dt><dd>design, optimization and deployment of the distributed camera communication system on IGRIS-C</dd>
+    <dt>Cameras</dt><dd>RealSense D435 (RGB and depth), the head stereo camera, and a camera on each hand (end-effector)</dd>
+    <dt>Stack</dt><dd>CycloneDDS · Python · C++ · IDL · JPEG compression · Linux networking · systemd · Cython</dd>
+    <dt>Outcome</dt><dd>shipped in the IGRIS-C public SDK Camera API; deployed to multiple IGRIS-C robots</dd>
+  </dl>
+
+  <h2 id="problem">The problem</h2>
+  <p>IGRIS-C has cameras spread over its body (head and both hands), and the compute boards that produce and consume the video (a Jetson and NUCs) are physically separate. Three things had to be solved:</p>
+  <ol>
+    <li><strong>Real-time, low-latency transport</strong> of large video streams from several cameras at once.</li>
+    <li><strong>A stable mixed network</strong>: video had to cross wired LAN and Wi-Fi (and an access-point mode) without drops.</li>
+    <li><strong>Field deployability</strong>: the robot should work as soon as it is powered on, with no manual setup.</li>
+  </ol>
+  <p>When I started, the existing Python CycloneDDS send/receive code did not work at all.</p>
+
+  <h2 id="built">What I built</h2>
+  <h3 id="getting-cyclonedds-streaming-working-on-the-robot">1. Getting CycloneDDS streaming working on the robot</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>the existing Python publish/subscribe code did not run, so no data moved between the Jetson and the NUC.</dd>
+    <dt>What I did</dt><dd>diagnosed it layer by layer, from the network stack down to library paths. I raised the OS kernel socket buffer limits that were blocking real-time traffic, fixed shared-library loading by correcting <code>LD_LIBRARY_PATH</code>, and fixed the IDL compile errors structurally by building the IDL compiler (<code>idlc</code>) inside the CMake build instead of relying on a separately installed one.</dd>
+    <dt>Outcome</dt><dd>Jetson-to-NUC communication over LAN worked, which became the base for everything else.</dd>
+  </dl>
+  <figure><img src="/assets/projects/robros/still-1.jpg" alt="Robot outline with five camera streams named eyes_stereo, d435_color, d435_depth, left_hand and right_hand" width="1600" height="900" loading="lazy" /><figcaption>One topic per stream.</figcaption></figure>
+  <h3 id="video-message-format-and-jpeg-pipeline-python-c">2. Video message format and JPEG pipeline (Python + C++)</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>there was no message type for sending camera images, and raw frames from several cameras are heavy on bandwidth.</dd>
+    <dt>What I did</dt><dd>designed a dedicated image message schema in IDL, modeled on ROS message types, and implemented the senders and receivers in both Python and C++. Frames are JPEG-compressed before they are published, which cuts bandwidth. I added a sequence number to the message header and frame-check fields to the publish and subscribe code, so the receiver can tell when a frame was dropped.</dd>
+    <dt>Outcome</dt><dd>RGB/depth and stereo images streamed in real time. The design carried over into the SDK's <code>CompressedMessage</code> topic structure, with one topic per stream (<code>d435_color</code>, <code>d435_depth</code>, <code>eyes_stereo</code>, <code>left_hand</code>, <code>right_hand</code>).</dd>
+  </dl>
+  <figure class="boxed"><img alt="Camera → JPEG → CycloneDDS topic → C++ / Python subscribers" src="/assets/projects/robros/robros-video-pipeline.png"/><figcaption>Camera → JPEG → CycloneDDS topic → C++ / Python subscribers</figcaption></figure>
+  <h3 id="crossing-wired-and-wireless-networks-bridge-routing-nat">3. Crossing wired and wireless networks (bridge, routing, NAT)</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>NUC-to-NUC over Wi-Fi worked, but a path that mixed LAN and Wi-Fi failed, and the bridge machine silently dropped packets between the two networks.</dd>
+    <dt>What I did</dt><dd><ul><li>Switched to a re-publish design: the Jetson sends to a NUC acting as a bridge, and the bridge re-publishes to the client NUC.</li><li>Fixed node identification on Wi-Fi by pinning each node's own network interface in the CycloneDDS XML config (<code>NetworkInterfaceAddress</code>).</li><li>Traced the bridge's packet loss to the firewall and Linux kernel security filtering. I resolved it by relaxing those filters, enabling IP forwarding, setting up NAT, and controlling the routing table directly with <code>ip route</code>.</li><li>Rewrote the route scripts on the Jetson, bridge and client so each interface's gateway and route priority are set deterministically, which prevents routing-table conflicts.</li></ul></dd>
+    <dt>Outcome</dt><dd>video reached the client across LAN + Wi-Fi, and later in access-point mode as well.</dd>
+  </dl>
+  <figure><img src="/assets/projects/robros/still-3.jpg" alt="Jetson to NUC bridge over LAN, NUC bridge to NUC client over Wi-Fi, with the settings that make it work" width="1600" height="900" loading="lazy" /><figcaption>The bridge re-publishes between the wired and wireless sides.</figcaption></figure>
+  <h3 id="zero-touch-network-configuration">4. Zero-touch network configuration</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>routes and IPs were typed by hand in each terminal. The bridge's IP changes from network to network, and switching between Wi-Fi and access-point mode broke the routes.</dd>
+    <dt>What I did</dt><dd><ul><li>Tried NetworkManager Dispatcher scripts triggered on interface up/down. They caused routing-table conflicts, so I replaced them with logic that resets the IP tables and routes on every Wi-Fi/AP switch.</li><li>In AP mode, put the Jetson–NUC link and the NUC–NUC link on separate subnets so traffic doesn't collide.</li><li>Made the client find the bridge on its own by matching its MAC address against the active network range.</li><li>Generated the IP settings and the CycloneDDS XML automatically for whatever machine the code runs on.</li></ul></dd>
+    <dt>Outcome</dt><dd>no manual network setup. Streaming worked in both Wi-Fi and AP mode and on a new Jetson.</dd>
+  </dl>
+  <h3 id="udp-buffer-tuning">5. UDP buffer tuning</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>high-resolution frames overflowed the UDP socket buffers, causing intermittent frame drops.</dd>
+    <dt>What I did</dt><dd>measured the kernel's receive limits under real traffic and raised the UDP buffer size to fit the load, together with CycloneDDS network settings (bandwidth, socket buffers).</dd>
+    <dt>Outcome</dt><dd>a steady data flow at high resolution.</dd>
+  </dl>
+  <h3 id="runtime-camera-configuration-service">6. Runtime camera configuration service</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>resolution and frame rate were hard-coded, so every change meant editing code and rebuilding.</dd>
+    <dt>What I did</dt><dd>moved the camera settings into config files that are parsed at startup. I then built a CycloneDDS request/response service so resolution, FPS and JPEG quality can be changed from outside while the camera node is running, and the node reconfigures itself. I ran repeated streaming tests over many resolution/FPS combinations to find the best balance between latency and image quality.</dd>
+    <dt>Outcome</dt><dd>camera settings can be tuned in the field without a rebuild. The service became the SDK's camera config API: per-camera request types (<code>RealsenseConfigRequest</code>, <code>StereoConfigRequest</code>, <code>MonoConfigRequest</code>), each answered with a <code>ServiceResponse</code>.</dd>
+  </dl>
+  <figure class="boxed"><img alt="external config request → DDS request/response → running camera node" src="/assets/projects/robros/robros-config-service.png"/><figcaption>external config request → DDS request/response → running camera node</figcaption></figure>
+  <h3 id="concurrency-per-camera-threads-and-async-callbacks">7. Concurrency: per-camera threads and async callbacks</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>processing several camera streams in one flow created bottlenecks, and a slow stream could hold up the others.</dd>
+    <dt>What I did</dt><dd>gave each camera its own thread (receiver → decoder → queue) so the streams run independently. I also moved data handling to a callback-listener pattern, which makes processing event-driven and asynchronous and reduces coupling between modules.</dd>
+    <dt>Outcome</dt><dd>multiple cameras stream at the same time without losing frames. The design also uses CPU time more efficiently.</dd>
+  </dl>
+  <h3 id="choosing-the-middleware-evaluating-and-removing-zenoh">8. Choosing the middleware: evaluating and removing Zenoh</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>connections over the mixed network were unstable at one point, so I evaluated Zenoh as an alternative.</dd>
+    <dt>What I did</dt><dd>brought Zenoh into the system and tested it. After code review I re-checked transport stability and resource use in the real setup. Tuned CycloneDDS alone met the requirements, so I removed the Zenoh dependency to keep one middleware and avoid library compatibility issues, then ran the full integration tests on CycloneDDS only.</dd>
+    <dt>Outcome</dt><dd>a simpler stack with one middleware, verified end to end, including the multithreaded streams and the Cython-compiled modules together.</dd>
+  </dl>
+  <h3 id="auto-start-with-systemd">9. Auto-start with systemd</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>the system had to start without anyone logging in, and recover when it crashed.</dd>
+    <dt>What I did</dt><dd>wrote a systemd unit (<code>jetson.service</code>) that starts the communication nodes at boot, restarts them after an abnormal exit, and sets their resource priority. The service hit library paths that resolved differently under pixi and under the system, so I fixed the environment variables and executable paths in the unit file.</dd>
+    <dt>Outcome</dt><dd>power on the robot and the camera system comes up on its own.</dd>
+  </dl>
+  <h3 id="cython-packaging">10. Cython packaging</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>pure-Python middleware modules carried interpreter overhead on large image data, and shipping plain scripts exposes the source.</dd>
+    <dt>What I did</dt><dd>compiled the compute-heavy core logic into C extension modules (<code>.so</code>) with Cython and packaged the system for installation.</dd>
+    <dt>Outcome</dt><dd>faster runtime execution of the core path, and the product ships as binaries, which protects ROBROS's source code.</dd>
+  </dl>
+  <h3 id="split-builds-for-jetson-and-nuc">11. Split builds for Jetson and NUC</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>dependencies, CycloneDDS in particular, have to be built differently on each type of machine.</dd>
+    <dt>What I did</dt><dd>separated the Jetson and NUC environments in <code>pyproject.toml</code> and branched the CycloneDDS installation step for each.</dd>
+    <dt>Outcome</dt><dd>one codebase that installs correctly on both machine types without hand-syncing environments.</dd>
+  </dl>
+  <h3 id="multi-robot-deployment">12. Multi-robot deployment</h3>
+  <dl class="kv">
+    <dt>Problem</dt><dd>the software had to run the same way on more than one robot.</dd>
+    <dt>What I did</dt><dd>ported the system to new hardware and tested it there. I also debugged an SSD that a cloned Jetson failed to recognize, checking each stage from the file system to the bootloader configuration.</dd>
+    <dt>Outcome</dt><dd>the same software is deployed to multiple IGRIS-C robots and works as soon as each one is powered on.</dd>
+  </dl>
+  <figure class="boxed"><img alt="Cython → systemd → build split → multi-robot deployment" src="/assets/projects/robros/robros-deploy-steps.png"/><figcaption>Cython → systemd → build split → multi-robot deployment</figcaption></figure>
+  <h3 id="sdk-integration-code-review-and-handover">13. SDK integration, code review and handover</h3>
+  <ul><li>Applied code-review feedback, refactored fragmented early code into cleaner interfaces with fewer cross-module dependencies, and wrote documentation covering installation, operation, the Jetson–NUC network setup, CycloneDDS tuning parameters and troubleshooting cases, so the next engineer could run the system without trial and error.</li><li>The camera data topics and the config service are part of the Camera API in IGRIS-C's public SDK.</li></ul>
+
+  <h2 id="results">Results</h2>
+  <ul><li>Real-time multi-camera streaming on a real humanoid robot, over LAN, Wi-Fi and access-point mode, reproduced on new hardware.</li><li>Deployed to multiple IGRIS-C robots, ready to use at power-on.</li><li>Shipped in IGRIS-C's public SDK Camera API: the camera topics (<code>CompressedMessage</code>) and the camera config service.</li><li>Internship evaluation: 100 / 100. Attendance: 69 days, 0 absences.</li></ul>
+
+  <h2 id="role">My role / contributions</h2>
+  <ul><li>Took the camera communication system on IGRIS-C from 0 to 1: a multi-camera, real-time CycloneDDS system.</li><li>Designed the image message schema and implemented it in both Python and C++, with JPEG compression and per-frame sequence numbers.</li><li>Designed and built the runtime camera config service (request/response), which became the SDK config API.</li><li>Debugged across the full stack: build chain (<code>idlc</code> in CMake), OS kernel (socket and UDP buffers), and networking (IP forwarding, NAT, routing).</li><li>Automated network setup (mode-switch route reset, MAC-based bridge discovery, generated DDS XML).</li><li>Added per-camera multithreading and a callback-listener async design.</li><li>Made the middleware decision (evaluated Zenoh, consolidated on CycloneDDS).</li><li>Turned research-style code into a shipped product: Cython <code>.so</code> packaging, systemd auto-start, Jetson/NUC build split, multi-robot deployment.</li><li>Wrote the install, operations and troubleshooting docs and handed the system over.</li></ul>
+
+  <h2 id="stack">Tech stack</h2>
+  <dl class="kv">
+    <dt>Middleware</dt><dd>CycloneDDS (Pub/Sub and request/response), IDL / <code>idlc</code>; Zenoh (evaluated, removed)</dd>
+    <dt>Languages</dt><dd>Python, C++, Cython</dd>
+    <dt>Media</dt><dd>JPEG compression</dd>
+    <dt>Systems</dt><dd>Linux networking (IP forwarding, NAT, <code>ip route</code>, NetworkManager), kernel and UDP socket buffer tuning, systemd</dd>
+    <dt>Build/packaging</dt><dd>CMake, pixi, <code>pyproject.toml</code></dd>
+    <dt>Hardware platform</dt><dd>IGRIS-C humanoid; Jetson and NUC computers; RealSense, stereo and hand cameras</dd>
+  </dl>
+
+  <h2 id="why">Why it matters to me</h2>
+  <p>Building a real-time data pipeline on edge devices taught me how much performance depends on the system around the model: memory, I/O, networking and deployment. That ties directly into my work on on-device AI inference optimization.</p>
+
+  <h2 id="links">Links</h2>
+  <ul class="links"><li><a href="https://www.robros.co.kr/ko/developers/v2.1.1/6111de84-6936-4ca9-9f80-4a99b6fdc80a/Camera" rel="noopener" target="_blank">IGRIS-C Camera API docs <span>↗</span></a></li><li><a href="https://github.com/robrosinc/igris_c_sdk_public" rel="noopener" target="_blank">IGRIS-C public SDK <span>↗</span></a></li></ul>
+  </article>
+</div>
+<section class="more">
+  <h2>More projects</h2>
+  <ul>
+    <li><a href="/projects/spark-llm-inference-opt/"><img src="/assets/projects/spark-llm-inference-opt/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>LLM inference optimization on DGX Spark</b></a></li>
+    <li><a href="/projects/3dgs-keyframe-distill/"><img src="/assets/projects/3dgs-keyframe-distill/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>Keyframe selection for 3D Gaussian Splatting</b></a></li>
+    <li><a href="/projects/data-efficient-3d-recon/"><img src="/assets/projects/data-efficient-3d-recon/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>View selection for data-efficient 3D reconstruction</b></a></li>
+  </ul>
+</section>
+</main>
+<footer class="foot">
+  <span>&copy; Lee DongWon</span>
+  <span><a href="mailto:dongwon.lee@khu.ac.kr">dongwon.lee@khu.ac.kr</a></span>
+</footer>
+</body>
+</html>

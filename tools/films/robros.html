@@ -1,0 +1,105 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="film.css">
+<style>
+svg{position:absolute;left:0;top:0;width:1136px;height:434px;overflow:visible}
+.box{fill:var(--panel);stroke:var(--line);stroke-width:1.5}
+.boxh{fill:var(--paper);stroke:var(--paper)}
+text{font-family:"Schibsted Grotesk";fill:var(--paper);font-size:20px;font-weight:600}
+text.m{font-family:"JetBrains Mono";font-size:17px;font-weight:500;fill:var(--lilac)}
+text.s{font-size:16px;font-weight:450;fill:var(--dim)}
+text.dk{fill:#170E1F}
+.wire{fill:none;stroke:var(--line);stroke-width:2}
+.wd{stroke-dasharray:7 7}
+.robot *{fill:none;stroke:var(--lilac);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.cam{fill:var(--amber)!important;stroke:none!important}
+.pk{fill:var(--amber)}
+.list{position:absolute;left:0;top:10px;font-size:28px;font-weight:600;line-height:1.9}
+.list div span{display:inline-block;width:34px;color:var(--ok)}
+.sdk{position:absolute;right:0;top:20px;width:500px;border:1.5px solid var(--line);border-radius:14px;background:var(--panel);padding:26px 30px}
+.sdk h5{font-size:20px;color:var(--dim);font-weight:500;margin-bottom:14px}
+.sdk p{font-size:19px;line-height:1.85;color:var(--lilac)}
+</style>
+<body>
+<section class="scene" id="s1" data-dur="5">
+  <div class="tag"><b>IGRIS-C humanoid</b> &nbsp;ROBROS internship</div>
+  <div class="stage">
+    <svg viewBox="0 0 1136 434">
+      <g class="robot" transform="translate(120,0)" data-a="fade">
+        <rect x="100" y="8" width="60" height="64" rx="16"/><path d="M130 72v16"/><rect x="74" y="88" width="112" height="130" rx="14"/>
+        <path d="M74 104l-40 20v120M186 104l40 20v120"/><rect x="18" y="244" width="30" height="34" rx="8"/><rect x="212" y="244" width="30" height="34" rx="8"/>
+        <path d="M104 218v170M156 218v170M92 388h26M144 388h26"/>
+        <circle class="cam" cx="118" cy="36" r="6" data-a="pop" style="--d:.8s"/><circle class="cam" cx="142" cy="36" r="6" data-a="pop" style="--d:.8s"/>
+        <rect class="cam" x="116" y="50" width="28" height="9" rx="4" data-a="pop" style="--d:1.3s"/>
+        <circle class="cam" cx="33" cy="261" r="7" data-a="pop" style="--d:1.9s"/><circle class="cam" cx="227" cy="261" r="7" data-a="pop" style="--d:2.2s"/>
+      </g>
+      <g>
+        <g data-a="in" style="--d:.9s"><path class="wire" d="M272 34H520"/><text x="536" y="40" class="m">eyes_stereo</text><text x="760" y="40" class="s">head stereo camera</text></g>
+        <g data-a="in" style="--d:1.4s"><path class="wire" d="M268 56H480V98H520"/><text x="536" y="104" class="m">d435_color</text><text x="760" y="104" class="s">RealSense D435, RGB</text></g>
+        <g data-a="in" style="--d:1.6s"><path class="wire" d="M480 98V162H520"/><text x="536" y="168" class="m">d435_depth</text><text x="760" y="168" class="s">RealSense D435, depth</text></g>
+        <g data-a="in" style="--d:2s"><path class="wire" d="M153 270V320H520" /><text x="536" y="326" class="m">left_hand</text><text x="760" y="326" class="s">hand camera</text></g>
+        <g data-a="in" style="--d:2.3s"><path class="wire" d="M347 270V384H520"/><text x="536" y="390" class="m">right_hand</text><text x="760" y="390" class="s">hand camera</text></g>
+      </g>
+    </svg>
+  </div>
+  <div class="cap">Five camera streams on one humanoid robot.<small>I built the system that carries them off the robot in real time.</small></div>
+</section>
+
+<section class="scene" id="s2" data-dur="5.5">
+  <div class="tag"><b>Video pipeline</b> &nbsp;Python + C++</div>
+  <div class="stage">
+    <svg viewBox="0 0 1136 434">
+      <g data-a="in" style="--d:.2s"><rect class="box" x="0" y="120" width="170" height="90" rx="12"/><text x="85" y="172" text-anchor="middle">Camera</text></g>
+      <g data-a="in" style="--d:.7s"><path class="wire" d="M170 165H250"/><rect class="box" x="250" y="120" width="170" height="90" rx="12"/><text x="335" y="160" text-anchor="middle">JPEG</text><text x="335" y="186" text-anchor="middle" class="s">compress</text></g>
+      <g data-a="in" style="--d:1.2s"><path class="wire" d="M420 165H500"/><rect class="boxh" x="500" y="105" width="260" height="120" rx="12"/><text x="630" y="158" text-anchor="middle" class="dk">CycloneDDS topic</text><text x="630" y="186" text-anchor="middle" class="m" style="fill:#5a3b78">CompressedMessage</text></g>
+      <g data-a="in" style="--d:1.7s"><path class="wire" d="M760 165H840V90H900M840 165V240H900"/><rect class="box" x="900" y="50" width="236" height="80" rx="12"/><text x="1018" y="97" text-anchor="middle">C++ subscriber</text><rect class="box" x="900" y="200" width="236" height="80" rx="12"/><text x="1018" y="247" text-anchor="middle">Python subscriber</text></g>
+      <g id="seq" transform="translate(250,320)"></g>
+      <text x="0" y="350" class="s" data-a="fade" style="--d:2.4s">sequence numbers</text>
+      
+      <g data-a="in" style="--d:4s"><text x="770" y="350" style="fill:var(--bad)">frame 44 dropped, detected</text></g>
+    </svg>
+  </div>
+  <div class="cap">Each frame is JPEG-compressed and published on its own topic.<small>A sequence number in every header lets the receiver detect dropped frames.</small></div>
+</section>
+
+<section class="scene" id="s3" data-dur="5.5">
+  <div class="tag"><b>Mixed network</b> &nbsp;wired LAN + Wi-Fi</div>
+  <div class="stage">
+    <svg viewBox="0 0 1136 434">
+      <g data-a="in" style="--d:.2s"><rect class="box" x="0" y="110" width="240" height="120" rx="14"/><text x="120" y="165" text-anchor="middle">Jetson</text><text x="120" y="193" text-anchor="middle" class="s">cameras, publishers</text></g>
+      <g data-a="in" style="--d:.7s"><path class="wire" d="M240 170H448"/><text x="344" y="150" text-anchor="middle" class="s">LAN</text><rect class="boxh" x="448" y="110" width="240" height="120" rx="14"/><text x="568" y="165" text-anchor="middle" class="dk">NUC bridge</text><text x="568" y="193" text-anchor="middle" style="fill:#5a3b78;font-size:16px;font-weight:500">re-publish, NAT, routes</text></g>
+      <g data-a="in" style="--d:1.2s"><path class="wire wd" d="M688 170H896"/><text x="792" y="150" text-anchor="middle" class="s">Wi-Fi / AP mode</text><rect class="box" x="896" y="110" width="240" height="120" rx="14"/><text x="1016" y="165" text-anchor="middle">NUC client</text><text x="1016" y="193" text-anchor="middle" class="s">subscribers</text></g>
+      <g id="pk"></g>
+      <g data-a="in" style="--d:2.6s"><text x="0" y="320" class="m">ip_forward = 1</text><text x="250" y="320" class="m">NAT</text><text x="350" y="320" class="m">ip route</text><text x="500" y="320" class="m">NetworkInterfaceAddress</text><text x="830" y="320" class="m">UDP buffers ↑</text></g>
+      <text x="0" y="360" class="s" data-a="in" style="--d:3.1s">Generated per machine. The client finds the bridge by MAC address.</text>
+    </svg>
+  </div>
+  <div class="cap">Video crosses wired LAN and Wi-Fi through a bridge.<small>Forwarding, NAT and routes are set automatically, with no manual network setup.</small></div>
+</section>
+
+<section class="scene" id="s4" data-dur="5.5">
+  <div class="tag"><b>Shipped</b> &nbsp;not a prototype</div>
+  <div class="stage">
+    <div class="list">
+      <div data-a="in" style="--d:.3s"><span>✓</span>Power on: systemd starts every node</div>
+      <div data-a="in" style="--d:.9s"><span>✓</span>Camera settings change at runtime</div>
+      <div data-a="in" style="--d:1.5s"><span>✓</span>Core path compiled with Cython</div>
+      <div data-a="in" style="--d:2.1s"><span>✓</span>Deployed to multiple IGRIS-C robots</div>
+    </div>
+    <div class="sdk" data-a="left" style="--d:2.8s">
+      <h5>IGRIS-C public SDK, Camera API</h5>
+      <p class="mono">CompressedMessage<br>RealsenseConfigRequest<br>StereoConfigRequest<br>MonoConfigRequest<br>ServiceResponse</p>
+    </div>
+  </div>
+  <div class="cap">Now part of the IGRIS-C public SDK Camera API.<small>Real-time Camera Streaming for a Humanoid Robot · Lee DongWon</small></div>
+</section>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const seq=document.getElementById('seq');
+[41,42,43,45,46,47].forEach((n,i)=>{const g=document.createElementNS(NS,'g');g.setAttribute('data-a','pop');g.style.setProperty('--d',(2.4+i*0.25)+'s');g.style.setProperty('--t','.3s');g.style.transformBox='fill-box';g.style.transformOrigin='center';
+ const x=i*80+(i>=3?0:0);g.innerHTML=`<rect x="${x}" y="0" width="66" height="44" rx="8" fill="${'var(--panel)'}" stroke="var(--line)" stroke-width="1.5"/><text x="${x+33}" y="29" text-anchor="middle" class="m">${n}</text>`;seq.appendChild(g);});
+const gap=document.createElementNS(NS,'rect');gap.setAttribute('x',233);gap.setAttribute('y',-6);gap.setAttribute('width',14);gap.setAttribute('height',56);gap.setAttribute('rx',3);gap.setAttribute('fill','var(--bad)');gap.setAttribute('data-a','fade');gap.style.setProperty('--d','3.9s');seq.appendChild(gap);
+const pk=document.getElementById('pk');
+for(let i=0;i<14;i++){const c=document.createElementNS(NS,'circle');c.setAttribute('r',6);c.setAttribute('cy',170);c.setAttribute('class','pk');c._d=1.6+i*0.27;pk.appendChild(c);}
+window.onSeek=(id,t)=>{if(id!=='s3')return;[...pk.children].forEach(c=>{const lt=(t-c._d)/1.5;if(lt<0||lt>1){c.setAttribute('opacity',0);return;}
+ let x;if(lt<.42)x=240+208*(lt/.42);else if(lt<.58){c.setAttribute('opacity',0);return;}else x=688+208*((lt-.58)/.42);c.setAttribute('cx',x);c.setAttribute('opacity',1);});};
+</script>
+<script src="film.js"></script>

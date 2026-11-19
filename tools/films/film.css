@@ -1,0 +1,28 @@
+@font-face{font-family:"Schibsted Grotesk";src:url(fonts/sg.woff2) format("woff2");font-weight:400 900;}
+
+@font-face{font-family:"JetBrains Mono";src:url(fonts/jbm.woff2) format("woff2");font-weight:100 800;}
+:root{--bg:#170E1F;--panel:#241630;--line:#4A3560;--paper:#F5F1F8;--dim:#A794B8;--lilac:#C9B2E0;--plum:#8E4FB8;--amber:#FFC247;--bad:#FF6B5E;--ok:#6FE0B0;}
+*{box-sizing:border-box;margin:0;padding:0;animation-play-state:paused!important;animation-fill-mode:both!important;}
+html,body{width:1280px;height:720px;overflow:hidden;background:var(--bg);color:var(--paper);font-family:"Schibsted Grotesk","Noto Sans CJK KR","Apple SD Gothic Neo",sans-serif;-webkit-font-smoothing:antialiased;}
+.scene{position:absolute;inset:0;visibility:hidden;animation:scn var(--dur) linear;}
+.scene.on{visibility:visible;}
+@keyframes scn{0%{opacity:0}4%{opacity:1}95%{opacity:1}100%{opacity:0}}
+.scene.last{animation-name:scnl}@keyframes scnl{0%{opacity:0}4%{opacity:1}100%{opacity:1}}
+.cap{position:absolute;left:72px;right:72px;bottom:54px;font-size:36px;font-weight:650;line-height:1.2;letter-spacing:-.015em;text-wrap:balance;}
+.cap small{display:block;margin-top:10px;font-size:20px;font-weight:450;color:var(--dim);letter-spacing:0;}
+.tag{position:absolute;left:72px;top:44px;font-size:18px;font-weight:600;color:var(--dim);}
+.tag b{color:var(--paper);font-weight:700}
+.stage{position:absolute;left:72px;right:72px;top:96px;bottom:190px;}
+.mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;}
+.num{font-variant-numeric:tabular-nums;}
+.amber{color:var(--amber)}.lil{color:var(--lilac)}.bad{color:var(--bad)}.okc{color:var(--ok)}.dimc{color:var(--dim)}
+[data-a]{animation-duration:var(--t,.6s);animation-delay:var(--d,0s);animation-timing-function:cubic-bezier(.2,.7,.2,1);}
+[data-a=in]{animation-name:a-in}@keyframes a-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+[data-a=fade]{animation-name:a-fade}@keyframes a-fade{from{opacity:0}to{opacity:1}}
+[data-a=out]{animation-name:a-out}@keyframes a-out{from{opacity:1}to{opacity:0}}
+[data-a=dim]{animation-name:a-dim}@keyframes a-dim{from{opacity:1}to{opacity:.13}}
+[data-a=pop]{animation-name:a-pop}@keyframes a-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+[data-a=gx]{animation-name:a-gx;transform-origin:left center}@keyframes a-gx{from{transform:scaleX(0)}to{transform:none}}
+[data-a=gy]{animation-name:a-gy;transform-origin:center bottom}@keyframes a-gy{from{transform:scaleY(0)}to{transform:none}}
+[data-a=left]{animation-name:a-left}@keyframes a-left{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:none}}
+[data-a=draw]{stroke-dasharray:var(--len,1000);animation-name:a-draw}@keyframes a-draw{from{stroke-dashoffset:var(--len,1000)}to{stroke-dashoffset:0}}

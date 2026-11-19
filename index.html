@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lee DongWon</title>
+  <meta name="description" content="Undergraduate researcher at EMIL Lab, Kyung Hee University. KV cache quantization for on-device LLM inference." />
+  <meta name="author" content="Lee DongWon" />
+  <link rel="canonical" href="https://moovingsloth.github.io/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="apple-touch-icon" href="/media/sloth-icon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#40045C" />
+  <meta property="og:site_name" content="Lee DongWon" />
+  <meta property="og:title" content="Lee DongWon" />
+  <meta property="og:description" content="Undergraduate researcher at EMIL Lab, Kyung Hee University. KV cache quantization for on-device LLM inference." />
+  <meta property="og:url" content="https://moovingsloth.github.io/" />
+  <meta property="og:image" content="https://moovingsloth.github.io/assets/projects/long-video-kv/film.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preload" href="/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="me" href="/">Lee DongWon</a>
+  <nav aria-label="Site">
+    <a href="/#projects">Projects</a>
+    <a href="/#experience">Experience</a>
+    <a href="/assets/cv/Dongwon_Lee_CV.pdf">CV</a>
+  </nav>
+</header>
+<main>
+<section class="intro" id="about">
+  <img class="face" src="/assets/avatar.png" alt="Lee DongWon" width="132" height="132" />
+  <div>
+    <h1>Cutting the memory LLMs need, so they can run on-device.</h1>
+    <p>Hello! I&rsquo;m Lee DongWon, a Software Convergence undergraduate at Kyung Hee University and an undergraduate researcher at the <a href="https://emil.khu.ac.kr/" target="_blank" rel="noopener">EMIL Lab</a>, advised by Professor <a href="https://www.sunghachoi.com/" target="_blank" rel="noopener">Sungha Choi</a>. I study KV cache quantization to cut LLM memory for on-device inference, aiming for work that reaches real products. I also love AI tools and heavily use agentic AI like Grok Bot.</p>
+    <ul class="contact">
+      <li><a href="mailto:dongwon.lee@khu.ac.kr">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/dong-won-lee/" target="_blank" rel="noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/moovingsloth" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="/assets/cv/Dongwon_Lee_CV.pdf" target="_blank" rel="noopener">CV (PDF)</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="reel" id="projects">
+  <div class="inner">
+    <h2>Projects, each explained in about 20 seconds</h2>
+    <div class="grid">
+      <div class="screen">
+        <video id="player" controls muted playsinline preload="metadata" poster="/assets/projects/long-video-kv/film.jpg" src="/assets/projects/long-video-kv/film.mp4"></video>
+        <div class="now" aria-live="polite">
+          <div><h3 id="now-title">Long-video understanding in a third of the KV memory</h3><p class="when" id="now-when">Capstone, Jun. 2026 to present</p></div>
+          <a class="btn" id="now-link" href="/projects/long-video-kv/">Read the full project</a>
+          <p class="sum" id="now-sum">INT4 storage for the kept KV cache on top of InfiniPot-V, with Qwen2-VL-7B. About a third of the KV bytes at the same 6K budget, accuracy on par with FP16.</p>
+        </div>
+      </div>
+      <ol class="list">
+        <li><a href="/projects/long-video-kv/" aria-current="true" data-film="/assets/projects/long-video-kv/film.mp4" data-poster="/assets/projects/long-video-kv/film.jpg" data-when="Capstone, Jun. 2026 to present" data-sum="INT4 storage for the kept KV cache on top of InfiniPot-V, with Qwen2-VL-7B. About a third of the KV bytes at the same 6K budget, accuracy on par with FP16."><img src="/assets/projects/long-video-kv/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>Long-video understanding in a third of the KV memory</b><span class="live">In progress</span></div></a></li>
+        <li><a href="/projects/lrm-kv-quant/" aria-current="false" data-film="/assets/projects/lrm-kv-quant/film.mp4" data-poster="/assets/projects/lrm-kv-quant/film.jpg" data-when="EMIL Lab, Jul. 2026 to present" data-sum="Reasoning models grow their KV cache with every token of thought. I study how to store it in fewer bits without breaking the final answer. In progress."><img src="/assets/projects/lrm-kv-quant/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>KV cache quantization for reasoning LLMs</b><span class="live">In progress</span></div></a></li>
+        <li><a href="/projects/robros/" aria-current="false" data-film="/assets/projects/robros/film.mp4" data-poster="/assets/projects/robros/film.jpg" data-when="ROBROS, Dec. 2025 to Mar. 2026" data-sum="I built and shipped the camera communication system of the IGRIS-C humanoid: five streams over wired LAN and Wi-Fi, now part of its public SDK Camera API."><img src="/assets/projects/robros/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>Real-time camera streaming for a humanoid robot</b><span>ROBROS, Dec. 2025 to Mar. 2026</span></div></a></li>
+        <li><a href="/projects/spark-llm-inference-opt/" aria-current="false" data-film="/assets/projects/spark-llm-inference-opt/film.mp4" data-poster="/assets/projects/spark-llm-inference-opt/film.jpg" data-when="Speculative decoding with vLLM" data-sum="Speculative decoding with a 0.5B draft model cut time per output token 73 to 75% at batch 1, with MMLU-Pro unchanged and HumanEval at 83.5% against 82.3%."><img src="/assets/projects/spark-llm-inference-opt/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>LLM inference optimization on DGX Spark</b><span>Speculative decoding with vLLM</span></div></a></li>
+        <li><a href="/projects/3dgs-keyframe-distill/" aria-current="false" data-film="/assets/projects/3dgs-keyframe-distill/film.mp4" data-poster="/assets/projects/3dgs-keyframe-distill/film.jpg" data-when="TUM RGB-D, gsplat" data-sum="Sharpness-and-coverage keyframe selection for 3D Gaussian Splatting. On average +0.55 dB PSNR over uniform sampling using 1.7 to 21.1% of the frames; results vary by scene."><img src="/assets/projects/3dgs-keyframe-distill/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>Keyframe selection for 3D Gaussian Splatting</b><span>TUM RGB-D, gsplat</span></div></a></li>
+        <li><a href="/projects/data-efficient-3d-recon/" aria-current="false" data-film="/assets/projects/data-efficient-3d-recon/film.mp4" data-poster="/assets/projects/data-efficient-3d-recon/film.jpg" data-when="Mar. to Jun. 2026" data-sum="A robot camera gives more frames than 3D Gaussian Splatting needs. Distillation-style view selection keeps a small subset; pose-greedy was best at small view counts."><img src="/assets/projects/data-efficient-3d-recon/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>View selection for data-efficient 3D reconstruction</b><span>Mar. to Jun. 2026</span></div></a></li>
+        <li><a href="/projects/chaltteok/" aria-current="false" data-film="/assets/projects/chaltteok/film.mp4" data-poster="/assets/projects/chaltteok/film.jpg" data-when="Startup, Mar. 2024 to Jul. 2025" data-sum="사진관과 사진가를 찾아 비교하고 예약·결제까지 하는 모바일 앱. I founded it, led a 5-member team as PM, and shipped it on the App Store: 16 B2B partners, 500+ DAU."><img src="/assets/projects/chaltteok/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><div><b>찰칵의 덕후: photo studio and photographer finder app</b><span>Startup, Mar. 2024 to Jul. 2025</span></div></a></li>
+      </ol>
+    </div>
+    <p class="also">Also ongoing since Mar. 2025: GPU-accelerated LLM inference, covering GPU kernel optimization and self-hosted LLM serving with vLLM on limited GPU resources.</p>
+  </div>
+</section>
+
+<section class="block" id="experience">
+  <h2>Experience</h2>
+  <ol class="xp">
+    <li>
+      <time>Jul. 2026 &ndash; Nov. 2026</time>
+      <div class="logo"><img src="/assets/logos/khu.jpg" alt="" /></div>
+      <div>
+        <h3>Undergraduate Research Intern</h3>
+        <p class="where">EMIL Lab, Kyung Hee University</p>
+        <ul>
+          <li>Evaluated an initial KV cache quantization approach for long-context LLM reasoning; a modified ThinKV implementation showed a <strong>47.5 percentage-point accuracy gap</strong> versus FP16 on an AIME 2025 subset (10 problems &times; 4 responses, DeepSeek-R1-Distill-Qwen-14B).</li>
+          <li>Redirected research to importance-based global KV cache quantization, targeting lower memory use while preserving reasoning accuracy.</li>
+        </ul>
+        <p><a href="/projects/lrm-kv-quant/">KV cache quantization for reasoning LLMs</a></p>
+      </div>
+    </li>
+    <li>
+      <time>Dec. 2025 &ndash; Feb. 2026</time>
+      <div class="logo"><img src="https://www.robros.co.kr/images/logo.png" alt="" /></div>
+      <div>
+        <h3>Robotics System Software Engineer Intern</h3>
+        <p class="where">ROBROS, Seoul, South Korea</p>
+        <p>Built and tested a humanoid SLAM image-streaming module on edge devices (Jetson Orin Nano, Intel NUC) over heterogeneous networks, tuning CycloneDDS and Zenoh in C++ and Python.</p>
+        <p><a href="/projects/robros/">ROBROS camera streaming project</a></p>
+      </div>
+    </li>
+    <li>
+      <time>Jul. 2025 &ndash; Dec. 2025</time>
+      <div class="logo"><img src="/assets/logos/khu.jpg" alt="" /></div>
+      <div>
+        <h3>Undergraduate Research Assistant</h3>
+        <p class="where">Kyung Hee University, Yongin, South Korea</p>
+        <ul>
+          <li>Led end-to-end data analysis for a joint study with social science researchers on ChatGPT as an AI textbook alternative.</li>
+          <li>Processed multimodal data, built ML/DL models, and validated findings through empirical analysis.</li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <time>Jul. 2022 &ndash; Jan. 2024</time>
+      <div class="logo"><img src="/assets/logos/rok-army.png" alt="" /></div>
+      <div>
+        <h3>Sergeant</h3>
+        <p class="where">Republic of Korea Army</p>
+        <p>Completed mandatory military service.</p>
+      </div>
+    </li>
+  </ol>
+</section>
+</main>
+<footer class="foot">
+  <span>&copy; Lee DongWon</span>
+  <span><a href="mailto:dongwon.lee@khu.ac.kr">dongwon.lee@khu.ac.kr</a></span>
+</footer>
+</body>
+</html>

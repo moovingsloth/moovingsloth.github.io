@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3DGS Keyframe Distillation · Lee DongWon</title>
+  <meta name="description" content="Sharpness-and-coverage keyframe selection for 3D Gaussian Splatting, evaluated on three TUM RGB-D sequences." />
+  <meta name="author" content="Lee DongWon" />
+  <link rel="canonical" href="https://moovingsloth.github.io/projects/3dgs-keyframe-distill/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="apple-touch-icon" href="/media/sloth-icon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#40045C" />
+  <meta property="og:site_name" content="Lee DongWon" />
+  <meta property="og:title" content="3DGS Keyframe Distillation · Lee DongWon" />
+  <meta property="og:description" content="Sharpness-and-coverage keyframe selection for 3D Gaussian Splatting, evaluated on three TUM RGB-D sequences." />
+  <meta property="og:url" content="https://moovingsloth.github.io/projects/3dgs-keyframe-distill/" />
+  <meta property="og:image" content="https://moovingsloth.github.io/assets/projects/3dgs-keyframe-distill/film.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preload" href="/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="me" href="/">Lee DongWon</a>
+  <nav aria-label="Site">
+    <a href="/#projects" aria-current="page">Projects</a>
+    <a href="/#experience">Experience</a>
+    <a href="/assets/cv/Dongwon_Lee_CV.pdf">CV</a>
+  </nav>
+</header>
+<main>
+<div class="phead">
+  <h1>3DGS Keyframe Distillation</h1>
+  <p class="role">3D Gaussian Splatting (gsplat) on TUM RGB-D sequences.</p>
+  <p class="lead">A sharpness-and-coverage keyframe selection for 3D Gaussian Splatting: a modest gain over uniform sampling from a small share of the frames, reported with its limits.</p>
+  <ul class="links"><li><a class="btn" href="https://github.com/moovingsloth/3dgs-keyframe-distill" target="_blank" rel="noopener">Code on GitHub</a></li></ul>
+</div>
+<div class="film">
+  <figure>
+    <video controls muted playsinline preload="metadata" poster="/assets/projects/3dgs-keyframe-distill/film.jpg"><source src="/assets/projects/3dgs-keyframe-distill/film.mp4" type="video/mp4" /></video>
+    <figcaption>The project in 17 seconds. No sound.</figcaption>
+  </figure>
+</div>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><p>On this page</p></nav>
+  <article class="prose">
+  <h2 id="overview">Overview</h2>
+  <p>3D Gaussian Splatting trains on posed images, and a handheld RGB-D sequence contains many blurry or near-duplicate frames. I designed a keyframe selection that scores sharpness and trajectory coverage together, and compared it with uniform sampling at budgets of 30 and 60 frames.</p>
+  <figure><img src="/assets/projects/3dgs-keyframe-distill/still-1.jpg" alt="A sharpness curve over frame id; uniform picks sometimes land on blurry dips while the proposed picks sit on sharp frames spread across the sequence" width="1600" height="900" loading="lazy" /><figcaption>The idea: pick sharp frames, spread across the trajectory (schematic curve, not measured data).</figcaption></figure>
+
+  <h2 id="setup">Setup</h2>
+  <dl class="kv">
+    <dt>Renderer</dt><dd>3D Gaussian Splatting with gsplat, 7k iterations</dd>
+    <dt>Data</dt><dd>Three TUM RGB-D sequences: freiburg1_desk, freiburg1_room, freiburg2_xyz</dd>
+    <dt>Budgets</dt><dd>30 and 60 training frames, which is 1.7&ndash;21.1% of the available frames</dd>
+    <dt>Baselines</dt><dd>Uniform sampling, random, blur-only selection, and all frames</dd>
+    <dt>Seeds</dt><dd>Two per setting</dd>
+  </dl>
+
+  <h2 id="results">Results</h2>
+  <p>Across the six scene and budget settings, the selection averaged +0.55 dB PSNR (range 0.0&ndash;1.5) and +0.015 SSIM (0.004&ndash;0.025) over uniform sampling.</p>
+  <figure><video controls muted loop playsinline preload="none" poster="/assets/projects/3dgs-keyframe-distill/turntable.jpg"><source src="/assets/projects/3dgs-keyframe-distill/turntable.mp4" type="video/mp4" /></video><figcaption>360-degree turntable renders at a 30-frame budget, seed 0: ground-truth fusion, this method, uniform sampling, and all frames, for each sequence.</figcaption></figure>
+  <figure class="boxed"><img src="/assets/projects/3dgs-keyframe-distill/summary.png" alt="Per-sequence PSNR and SSIM bars for this method, uniform, random and blur-only selection at 30 and 60 frames, with the sharpness of the training pool and the selected frames" width="2400" height="1632" loading="lazy" /><figcaption>PSNR and SSIM per sequence (mean and standard deviation over two seeds), and where each method picks frames.</figcaption></figure>
+
+  <h2 id="limits">Limits</h2>
+  <ul>
+    <li>Results varied by scene. On desk at 60 frames, the PSNR difference was within seed noise.</li>
+    <li>Blur-only selection outperformed this method on fr2_xyz.</li>
+    <li>LPIPS was not measured.</li>
+  </ul>
+  </article>
+</div>
+<section class="more">
+  <h2>More projects</h2>
+  <ul>
+    <li><a href="/projects/data-efficient-3d-recon/"><img src="/assets/projects/data-efficient-3d-recon/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>View selection for data-efficient 3D reconstruction</b></a></li>
+    <li><a href="/projects/chaltteok/"><img src="/assets/projects/chaltteok/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>찰칵의 덕후: photo studio and photographer finder app</b></a></li>
+    <li><a href="/projects/long-video-kv/"><img src="/assets/projects/long-video-kv/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>Long-video understanding in a third of the KV memory</b></a></li>
+  </ul>
+</section>
+</main>
+<footer class="foot">
+  <span>&copy; Lee DongWon</span>
+  <span><a href="mailto:dongwon.lee@khu.ac.kr">dongwon.lee@khu.ac.kr</a></span>
+</footer>
+</body>
+</html>

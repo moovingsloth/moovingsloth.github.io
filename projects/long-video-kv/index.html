@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Memory-Efficient Long-Video Understanding · Lee DongWon</title>
+  <meta name="description" content="INT4 KV cache storage on top of InfiniPot-V for long-video understanding with Qwen2-VL-7B." />
+  <meta name="author" content="Lee DongWon" />
+  <link rel="canonical" href="https://moovingsloth.github.io/projects/long-video-kv/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="apple-touch-icon" href="/media/sloth-icon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#40045C" />
+  <meta property="og:site_name" content="Lee DongWon" />
+  <meta property="og:title" content="Memory-Efficient Long-Video Understanding · Lee DongWon" />
+  <meta property="og:description" content="INT4 KV cache storage on top of InfiniPot-V for long-video understanding with Qwen2-VL-7B." />
+  <meta property="og:url" content="https://moovingsloth.github.io/projects/long-video-kv/" />
+  <meta property="og:image" content="https://moovingsloth.github.io/assets/projects/long-video-kv/film.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preload" href="/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="me" href="/">Lee DongWon</a>
+  <nav aria-label="Site">
+    <a href="/#projects" aria-current="page">Projects</a>
+    <a href="/#experience">Experience</a>
+    <a href="/assets/cv/Dongwon_Lee_CV.pdf">CV</a>
+  </nav>
+</header>
+<main>
+<div class="cover">
+  <video autoplay muted loop playsinline preload="metadata" poster="/assets/projects/long-video-kv/cover.jpg" aria-hidden="true" tabindex="-1"><source src="/assets/projects/long-video-kv/cover.mp4" type="video/mp4" /></video>
+</div>
+<div class="phead">
+  <h1>Memory-Efficient Long-Video Understanding</h1>
+  <p class="role">Capstone project, Kyung Hee University. Jun. 2026 to present.</p>
+  <p class="lead">On top of InfiniPot-V KV cache compression, I store the kept cache in INT4 instead of FP16, so Qwen2-VL-7B needs about a third of the KV bytes at the same token budget.</p>
+</div>
+<div class="film">
+  <figure>
+    <video controls muted playsinline preload="metadata" poster="/assets/projects/long-video-kv/film.jpg"><source src="/assets/projects/long-video-kv/film.mp4" type="video/mp4" /></video>
+    <figcaption>The project in 21 seconds. No sound.</figcaption>
+  </figure>
+</div>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><p>On this page</p></nav>
+  <article class="prose">
+  <h2 id="overview">Overview</h2>
+  <p>With streaming long video, the KV cache grows with the number of frames: Qwen2-VL-7B at 768 frames holds about 50K tokens of full KV. InfiniPot-V compresses it to a 6K budget. I store the kept KV cache in INT4 instead of FP16. At the same 6K budget, INT4 reaches Video-MME 63.5 vs 62.8 and MLVU 66.1 vs 65.8 (FP16), using about 1/3.1 the KV bytes (164 B vs 512 B per token per head).</p>
+
+  <figure><img src="/assets/projects/long-video-kv/still-1.jpg" alt="A strip of video frames above a KV cache meter filled to about 50K tokens at 768 frames" width="1600" height="900" loading="lazy" /><figcaption>At 768 frames, Qwen2-VL-7B holds about 50K tokens of full KV cache.</figcaption></figure>
+  <h2 id="approach">Approach</h2>
+  <ul>
+    <li>InfiniPot-V (TaR + VaN + Pool) compresses the KV cache to a 6K budget.</li>
+    <li>The kept KV is stored as INT4 KIVI: keys quantized per channel, values per token, group size 32, and the most recent 128 tokens kept in FP16.</li>
+    <li>Compared against FP16 at 6K, at equal KV bytes.</li>
+    <li>Model: Qwen2-VL-7B. Benchmarks: Video-MME and MLVU.</li>
+  </ul>
+
+  <div class="pair2"><img src="/assets/projects/long-video-kv/still-2.jpg" alt="A grid of cache tokens where only a few stay lit, labelled 50K tokens to a 6K budget" width="1600" height="900" loading="lazy" /><img src="/assets/projects/long-video-kv/still-3.jpg" alt="Two bars comparing FP16 at 512 bytes with INT4 at 164 bytes per token per head" width="1600" height="900" loading="lazy" /></div>
+  <p class="note">Left: InfiniPot-V keeps a 6K budget (illustration). Right: the kept cache stored in INT4, 164 B against 512 B per token per head.</p>
+  <h2 id="my-role">My Role</h2>
+  <ul>
+    <li>Added INT4 KIVI KV storage on top of InfiniPot-V.</li>
+    <li>Ran ablations, using the best setting (including Pool) as the baseline.</li>
+    <li>Built the Video-MME / MLVU evaluation pipeline on a Slurm GPU cluster.</li>
+  </ul>
+  <p class="note">Tech: PyTorch, KV-cache quantization.</p>
+
+  <h2 id="results">Results</h2>
+  <div class="scroll">
+    <table>
+      <caption>Table 1. Main results (6K budget, same KV bytes)</caption>
+      <thead>
+        <tr><th>Method</th><th>KV</th><th>Budget</th><th>Video-MME S/M/L/Avg</th><th>MLVU Hol/Single/Multi/Avg</th></tr>
+      </thead>
+      <tbody>
+        <tr class="ref"><td>Full KV (InfiniPot-V paper)&dagger;</td><td>FP16</td><td>50K</td><td>74.7 / 62.1 / 55.0 / 63.9</td><td>76.3 / 73.9 / 43.3 / 65.9</td></tr>
+        <tr class="ref"><td>Full KV (ours)</td><td>FP16</td><td>50K</td><td>Not measured</td><td>76.1 / 74.8 / 43.1 / 66.1</td></tr>
+        <tr><td>InfiniPot-V (paper)&dagger;</td><td>FP16</td><td>6K</td><td>74.1 / 60.8 / 53.4 / 62.8</td><td>77.2 / 72.3 / <b>44.8</b> / 65.8</td></tr>
+        <tr><td>InfiniPot-V reproduced (TaR+VaN+Pool)</td><td>FP16</td><td>6K</td><td><b>74.6</b> / 61.4 / 52.4 / 62.8</td><td><b>78.9</b> / 71.5 / 44.0 / 65.8</td></tr>
+        <tr><td>Ours (TaR+VaN+Pool + INT4 KIVI)</td><td>INT4</td><td>6K</td><td>74.2 / <b>62.0</b> / <b>54.2</b> / <b>63.5</b></td><td>77.6 / <b>72.7</b> / <b>44.8</b> / <b>66.1</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">&dagger; From the InfiniPot-V paper. Full KV rows are reference rows (50K budget). &ldquo;Full KV (ours)&rdquo; uses Qwen2-VL-7B with FP16 KV at 50K, over 2,174 questions. Bold marks the best value per column among the 6K methods (Full KV rows excluded); ties are all bold.</p>
+
+  <div class="bars" aria-label="Average accuracy, FP16 vs INT4 at 6K">
+    <div class="bar-row"><span>Video-MME FP16</span><span class="track"><span class="fill light" style="width:62.8%"></span></span><span class="val">62.8</span></div>
+    <div class="bar-row"><span>Video-MME INT4</span><span class="track"><span class="fill" style="width:63.5%"></span></span><span class="val">63.5</span></div>
+    <div class="bar-row"><span>MLVU FP16</span><span class="track"><span class="fill light" style="width:65.8%"></span></span><span class="val">65.8</span></div>
+    <div class="bar-row"><span>MLVU INT4</span><span class="track"><span class="fill" style="width:66.1%"></span></span><span class="val">66.1</span></div>
+  </div>
+  <p class="note">Average accuracy at 6K (bar length = score out of 100; FP16 = InfiniPot-V reproduced).</p>
+
+  <div class="scroll">
+    <table>
+      <caption>Table 2. MLVU per-task accuracy (6K, Pool)</caption>
+      <thead>
+        <tr><th>KV</th><th class="n">Topic</th><th class="n">Anomaly</th><th class="n">Plot</th><th class="n">Needle</th><th class="n">Ego</th><th class="n">AO</th><th class="n">AC</th><th class="n">Avg</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FP16</td><td class="n"><b>87.8</b></td><td class="n"><b>70.0</b></td><td class="n">72.7</td><td class="n">78.0</td><td class="n"><b>63.9</b></td><td class="n">52.9</td><td class="n"><b>35.0</b></td><td class="n">65.8</td></tr>
+        <tr><td>INT4 KIVI</td><td class="n">86.7</td><td class="n">68.5</td><td class="n"><b>74.2</b></td><td class="n"><b>80.0</b></td><td class="n"><b>63.9</b></td><td class="n"><b>55.6</b></td><td class="n">34.0</td><td class="n"><b>66.1</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Bold marks the better value per task; ties are both bold.</p>
+
+  <div class="scroll">
+    <table>
+      <caption>Table 3. KV bytes per token per head</caption>
+      <thead>
+        <tr><th>KV</th><th class="n">Bytes</th><th>Breakdown</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>FP16</td><td class="n">512 B</td><td>&mdash;</td></tr>
+        <tr><td>INT4 KIVI</td><td class="n">164 B</td><td>128 data + 16 V scale/zero + 16 K scale/zero + 4 pos</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">About 1/3.1 the FP16 size. K per channel, V per token, group size 32, last 128 tokens FP16.</p>
+
+  <div class="bars" aria-label="KV bytes per token per head">
+    <div class="bar-row"><span>FP16</span><span class="track"><span class="fill light" style="width:100%"></span></span><span class="val">512 B</span></div>
+    <div class="bar-row"><span>INT4 KIVI</span><span class="track"><span class="fill" style="width:32.03125%"></span></span><span class="val">164 B</span></div>
+  </div>
+
+  <h2 id="references">References</h2>
+  <p>&dagger; Minsoo Kim, Kyuhong Shim, Jungwook Choi, and Simyung Chang. <a href="https://arxiv.org/abs/2506.15745">InfiniPot-V: Memory-Constrained KV Cache Compression for Streaming Video Understanding</a>. arXiv:2506.15745, 2025.</p>
+  </article>
+</div>
+<section class="more">
+  <h2>More projects</h2>
+  <ul>
+    <li><a href="/projects/lrm-kv-quant/"><img src="/assets/projects/lrm-kv-quant/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>KV cache quantization for reasoning LLMs</b></a></li>
+    <li><a href="/projects/robros/"><img src="/assets/projects/robros/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>Real-time camera streaming for a humanoid robot</b></a></li>
+    <li><a href="/projects/spark-llm-inference-opt/"><img src="/assets/projects/spark-llm-inference-opt/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>LLM inference optimization on DGX Spark</b></a></li>
+  </ul>
+</section>
+</main>
+<footer class="foot">
+  <span>&copy; Lee DongWon</span>
+  <span><a href="mailto:dongwon.lee@khu.ac.kr">dongwon.lee@khu.ac.kr</a></span>
+</footer>
+</body>
+</html>

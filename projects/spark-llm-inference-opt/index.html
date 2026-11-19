@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLM Inference Optimization on DGX Spark · Lee DongWon</title>
+  <meta name="description" content="Speculative decoding on DGX Spark: TPOT down 73 to 75% at batch 1 with accuracy intact; uncalibrated FP8 KV cache evaluated and rejected." />
+  <meta name="author" content="Lee DongWon" />
+  <link rel="canonical" href="https://moovingsloth.github.io/projects/spark-llm-inference-opt/" />
+  <link rel="icon" type="image/png" href="/media/sloth-icon-32.png" />
+  <link rel="apple-touch-icon" href="/media/sloth-icon-180.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="theme-color" content="#40045C" />
+  <meta property="og:site_name" content="Lee DongWon" />
+  <meta property="og:title" content="LLM Inference Optimization on DGX Spark · Lee DongWon" />
+  <meta property="og:description" content="Speculative decoding on DGX Spark: TPOT down 73 to 75% at batch 1 with accuracy intact; uncalibrated FP8 KV cache evaluated and rejected." />
+  <meta property="og:url" content="https://moovingsloth.github.io/projects/spark-llm-inference-opt/" />
+  <meta property="og:image" content="https://moovingsloth.github.io/assets/projects/spark-llm-inference-opt/film.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preload" href="/assets/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/assets/css/site.css" />
+  <script src="/assets/js/site.js" defer></script>
+</head>
+<body>
+<header class="top">
+  <a class="me" href="/">Lee DongWon</a>
+  <nav aria-label="Site">
+    <a href="/#projects" aria-current="page">Projects</a>
+    <a href="/#experience">Experience</a>
+    <a href="/assets/cv/Dongwon_Lee_CV.pdf">CV</a>
+  </nav>
+</header>
+<main>
+<div class="phead">
+  <h1>LLM Inference Optimization on DGX Spark</h1>
+  <p class="role">Qwen2.5-7B-Instruct on NVIDIA DGX Spark, served with vLLM.</p>
+  <p class="lead">Speculative decoding with a 0.5B draft model cut time per output token by 73&ndash;75% at batch size 1, with accuracy unchanged or slightly better.</p>
+  <ul class="links"><li><a class="btn" href="https://github.com/moovingsloth/spark-llm-inference-opt" target="_blank" rel="noopener">Code on GitHub</a></li></ul>
+</div>
+<div class="film">
+  <figure>
+    <video controls muted playsinline preload="metadata" poster="/assets/projects/spark-llm-inference-opt/film.jpg"><source src="/assets/projects/spark-llm-inference-opt/film.mp4" type="video/mp4" /></video>
+    <figcaption>The project in 22 seconds. No sound.</figcaption>
+  </figure>
+</div>
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Contents"><p>On this page</p></nav>
+  <article class="prose">
+  <h2 id="overview">Overview</h2>
+  <p>I applied speculative decoding to Qwen2.5-7B-Instruct served with vLLM on an NVIDIA DGX Spark, using Qwen2.5-0.5B as the draft model, and measured what it does to latency and to accuracy. I also tested an FP8 KV cache and rejected it.</p>
+  <figure><img src="/assets/projects/spark-llm-inference-opt/still-1.jpg" alt="A draft model proposes five tokens; the target model accepts four and replaces one" width="1600" height="900" loading="lazy" /><figcaption>Speculative decoding: the small model guesses ahead, the large model verifies in one pass (illustration).</figcaption></figure>
+
+  <h2 id="setup">Setup</h2>
+  <dl class="kv">
+    <dt>Hardware</dt><dd>NVIDIA DGX Spark (GB10)</dd>
+    <dt>Serving</dt><dd>vLLM 0.30</dd>
+    <dt>Target model</dt><dd>Qwen2.5-7B-Instruct</dd>
+    <dt>Draft model</dt><dd>Qwen2.5-0.5B</dd>
+    <dt>Workload</dt><dd>Synthetic prompts at 512, 2k and 8k input tokens, 128 output tokens, batch sizes 1 to 32, seed 0</dd>
+  </dl>
+
+  <h2 id="results">Results</h2>
+  <ul>
+    <li><b>Latency.</b> Time per output token (TPOT) fell 73&ndash;75% on batch-1 synthetic benchmarks. End-to-end latency fell 71% at 512-token input.</li>
+    <li><b>Accuracy.</b> MMLU-Pro was unchanged at 42.1% (1000-question subset). HumanEval was 83.5% against an 82.3% baseline.</li>
+    <li><b>Where it fades.</b> The gain shrinks as batch size and context grow; at batch 32 with 8k input the cell is KV-capacity-limited.</li>
+  </ul>
+  <figure><img src="/assets/projects/spark-llm-inference-opt/still-2.jpg" alt="Heatmap of TPOT reduction by batch size and input length, from 74.7% at batch 1 to 15.4% at batch 32 with 8k input" width="1600" height="900" loading="lazy" /><figcaption>TPOT reduction against the baseline, by batch size and input length.</figcaption></figure>
+  <figure class="boxed"><img src="/assets/projects/spark-llm-inference-opt/summary.png" alt="Summary figure: TPOT by batch size and input length for baseline, FP8 KV, speculative decoding and both; TPOT reduction heatmap; modelled decode bandwidth; accuracy on MMLU-Pro and HumanEval" width="2250" height="1530" loading="lazy" /><figcaption>Full measurements: TPOT by batch size, reduction heatmap, modelled decode bandwidth, and accuracy.</figcaption></figure>
+
+  <h2 id="rejected">What I rejected</h2>
+  <p>I evaluated an uncalibrated FP8 KV cache as a second optimization. Its accuracy collapsed (MMLU-Pro 26.8, HumanEval 2.4 in the e4m3 setting), so I rejected it instead of reporting the latency alone.</p>
+  <figure><img src="/assets/projects/spark-llm-inference-opt/still-3.jpg" alt="Bars for MMLU-Pro and HumanEval: baseline and speculative decoding level, FP8 KV cache far lower" width="1600" height="900" loading="lazy" /><figcaption>Accuracy for the baseline, speculative decoding, and the rejected FP8 KV cache.</figcaption></figure>
+  </article>
+</div>
+<section class="more">
+  <h2>More projects</h2>
+  <ul>
+    <li><a href="/projects/3dgs-keyframe-distill/"><img src="/assets/projects/3dgs-keyframe-distill/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>Keyframe selection for 3D Gaussian Splatting</b></a></li>
+    <li><a href="/projects/data-efficient-3d-recon/"><img src="/assets/projects/data-efficient-3d-recon/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>View selection for data-efficient 3D reconstruction</b></a></li>
+    <li><a href="/projects/chaltteok/"><img src="/assets/projects/chaltteok/thumb.jpg" alt="" width="480" height="270" loading="lazy" /><b>찰칵의 덕후: photo studio and photographer finder app</b></a></li>
+  </ul>
+</section>
+</main>
+<footer class="foot">
+  <span>&copy; Lee DongWon</span>
+  <span><a href="mailto:dongwon.lee@khu.ac.kr">dongwon.lee@khu.ac.kr</a></span>
+</footer>
+</body>
+</html>

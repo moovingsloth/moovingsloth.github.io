@@ -1,0 +1,79 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="film.css">
+<style>
+.chain{position:absolute;left:0;top:20px;display:flex;flex-wrap:wrap;gap:10px;width:1136px}
+.tk{padding:9px 14px;border-radius:8px;background:var(--panel);border:1.5px solid var(--line);font-size:19px;color:var(--lilac)}
+.tk.q{color:var(--paper);border-color:var(--paper)}
+.tk.ans{background:var(--amber);color:#170E1F;border-color:var(--amber);font-weight:700}
+.stack{position:absolute;left:0;bottom:0;display:flex;gap:6px;align-items:flex-end}
+.stack i{width:28px;height:60px;border-radius:4px;background:var(--lilac)}
+.lim{position:absolute;left:0;right:0;border-top:2px dashed var(--bad);color:var(--bad);font-size:20px;padding-top:6px;text-align:right}
+.mem{position:absolute;left:0;bottom:0;width:1136px;display:grid;grid-template-columns:repeat(40,1fr);gap:5px;align-items:end;height:330px}
+.mem i{border-radius:3px 3px 0 0;background:var(--lilac)}
+.blocks{position:absolute;left:0;top:30px;display:grid;grid-template-columns:repeat(24,1fr);gap:8px;width:1136px}
+.blocks i{height:74px;border-radius:5px;background:var(--lilac);transform-origin:bottom}
+@keyframes shrink{to{transform:scaleY(.4);background:var(--plum)}}
+@keyframes wob{0%{background:var(--plum)}100%{background:var(--bad)}}
+@keyframes b8{to{transform:scaleY(.5);background:var(--amber)}}
+@keyframes b4{to{transform:scaleY(.45);background:var(--plum)}}
+@keyframes b2{to{transform:scaleY(.22);background:#6b3a8c}}
+.fact{position:absolute;left:0;right:0;top:170px;display:flex;justify-content:space-between;align-items:flex-end}
+.fact .big{font-size:120px;font-weight:750;letter-spacing:-.04em;line-height:.9}
+.fact p{font-size:21px;color:var(--dim);max-width:560px;line-height:1.4}
+.legend{position:absolute;left:0;top:150px;display:flex;gap:36px;font-size:22px;color:var(--dim)}
+.legend b{display:inline-block;width:18px;height:18px;border-radius:4px;margin-right:10px;vertical-align:-2px}
+</style>
+<body>
+<section class="scene" id="s1" data-dur="5">
+  <div class="tag"><b>Reasoning LLMs</b> &nbsp;KV cache during decoding</div>
+  <div class="stage">
+    <div class="chain" id="chain"></div>
+    <div class="stack" id="stack"></div>
+  </div>
+  <div class="cap">Reasoning models write a long chain of thought before they answer.<small>Every generated token adds keys and values to the KV cache.</small></div>
+</section>
+
+<section class="scene" id="s2" data-dur="4.5">
+  <div class="tag"><b>The problem</b> &nbsp;memory grows with the reasoning itself</div>
+  <div class="stage">
+    <div class="lim" style="top:70px;--d:2.4s" data-a="fade">device memory</div>
+    <div class="mem" id="mem"></div>
+  </div>
+  <div class="cap">The cache grows token by token, for as long as the model thinks.<small>It limits how long a model can reason and whether it fits on a small device.</small></div>
+</section>
+
+<section class="scene" id="s3" data-dur="6">
+  <div class="tag"><b>Quantization</b> &nbsp;fewer bits per stored key and value</div>
+  <div class="stage">
+    <div class="blocks" id="bq"></div>
+    <div class="fact">
+      <div data-a="pop" style="--d:3s"><div class="big bad">−47.5 pt</div></div>
+      <p data-a="in" style="--d:3.4s">Accuracy gap versus FP16 in my first attempt, a modified ThinKV implementation. AIME 2025 subset, 10 problems × 4 responses, DeepSeek-R1-Distill-Qwen-14B.</p>
+    </div>
+  </div>
+  <div class="cap">Quantizing every token the same way broke the reasoning.<small>Small errors build up along the chain, and one wrong step changes the final answer.</small></div>
+</section>
+
+<section class="scene" id="s4" data-dur="5.5">
+  <div class="tag"><b>Current direction</b> &nbsp;in progress</div>
+  <div class="stage">
+    <div class="blocks" id="bi"></div>
+    <div class="legend" data-a="in" style="--d:2.6s">
+      <span><b style="background:var(--lilac)"></b>important tokens keep more bits</span>
+      <span><b style="background:var(--plum)"></b>the rest are stored in fewer</span>
+    </div>
+  </div>
+  <div class="cap">Now: importance-based global KV cache quantization.<small>Method and results will be shared after publication · EMIL Lab, Kyung Hee University</small></div>
+</section>
+<script>
+const words=['Q: find n','<think>','let','x','=','3k','+','1','so','x²','≡','1','mod 3','check','k','=','0','…','then','sum','of','roots','is','−b/a','…','verify','case','2','…','therefore','</think>','n = 204'];
+const chain=document.getElementById('chain'),stack=document.getElementById('stack');
+words.forEach((w,i)=>{const d=document.createElement('span');d.className='tk mono'+(i==0?' q':'')+(i==words.length-1?' ans':'');d.textContent=w;d.dataset.a='pop';d.style.setProperty('--d',(0.3+i*0.12)+'s');d.style.setProperty('--t','.25s');chain.appendChild(d);
+ const b=document.createElement('i');b.dataset.a='gy';b.style.setProperty('--d',(0.35+i*0.12)+'s');b.style.setProperty('--t','.25s');stack.appendChild(b);});
+const mem=document.getElementById('mem');
+for(let i=0;i<40;i++){const b=document.createElement('i');b.style.height=(8+i*8.2)+'px';b.dataset.a='gy';b.style.setProperty('--d',(0.3+i*0.07)+'s');b.style.setProperty('--t','.3s');if(i>=32)b.style.background='var(--bad)';mem.appendChild(b);}
+const bq=document.getElementById('bq');
+for(let i=0;i<24;i++){const b=document.createElement('i');b.style.animation=`shrink .5s ${0.6+i*0.03}s both, wob .4s ${1.8+i*0.04}s both`;if(i<9)b.style.animation=`shrink .5s ${0.6+i*0.03}s both`;bq.appendChild(b);}
+const bi=document.getElementById('bi');const imp=[0,1,5,9,14,15,22,23];const mid=[2,6,10,13,18,21];
+for(let i=0;i<24;i++){const b=document.createElement('i');const k=imp.includes(i)?null:(mid.includes(i)?'b4':'b2');if(k)b.style.animation=`${k} .6s ${0.8+i*0.05}s both`;bi.appendChild(b);}
+</script>
+<script src="film.js"></script>
